@@ -1,0 +1,44 @@
+# Ignorowanie folderów node_modules
+node_modules/
+
+# Ignorowanie plików konfiguracyjnych i tajnych
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignorowanie plików wyjściowych
+build/
+dist/
+.cache/
+.next/
+
+# Ignorowanie plików systemowych
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.iml
+out/
+
+# Ignorowanie plików logów
+*.log
+logs/
+
+# Ignorowanie plików kompilacyjnych
+*.tsbuildinfo
+coverage/
+
+# Ignorowanie cache
+.npm/
+.yarn/
+
+# Ignorowanie lock file (opcjonalnie, zależnie od używanego menedżera pakietów)
+package-lock.json
+yarn.lock
+
+# Ignorowanie plików konfiguracyjnych dla narzędzi
+*.babelrc
+.webpack/
+docs/
