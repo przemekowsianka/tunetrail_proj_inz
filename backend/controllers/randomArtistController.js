@@ -45,15 +45,15 @@ exports.getRandomArtist = async (req, res) => {
         .json({ message: "MBID nie znaleziono dla podanego artysty." });
     }
 
-    const musicBrainzResponse = await axios.get(
-      `${MUSICBRAINZ_BASE_URL}artist/${mbid}`,
-      {
-        params: { fmt: "json" },
-      }
-    );
+    // const musicBrainzResponse = await axios.get(
+    //   `${MUSICBRAINZ_BASE_URL}artist/${mbid}`,
+    //   {
+    //     params: { fmt: "json" },
+    //   }
+    // );
+    // console.log("MUSIC BRAINZ RESPONSE:    ", musicBrainzResponse);
+    // const aliases = musicBrainzResponse.data.aliases.map((alias) => alias.name);
 
-    const aliases = musicBrainzResponse.data.aliases.map((alias) => alias.name);
-    //alias
     const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji
     const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
       headers: { Authorization: `Bearer ${spotifyToken}` },
@@ -74,9 +74,9 @@ exports.getRandomArtist = async (req, res) => {
         url: artistData.url,
         mbid: mbid,
       },
-      musicBrainz: {
-        aliases: aliases,
-      },
+      // musicBrainz: {
+      //   aliases: aliases,
+      // },
       spotify: {
         name: spotifyArtist.name,
         url: spotifyArtist.external_urls.spotify,

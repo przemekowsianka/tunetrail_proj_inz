@@ -6,6 +6,8 @@ import Recommend from "./components/Recommend";
 function App() {
   return (
     <div className="App">
+      <LoginForm />
+      <RegisterForm />
       <Recommend />
     </div>
   );
