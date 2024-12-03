@@ -16,42 +16,48 @@ exports.getRandomTag = async (req, res) => {
     const tags = topTagsResponse.data.tags.tag;
 
     if (!tags || tags.length === 0) {
-      return res.status(404).json({ message: "Nie znaleziono artystów." });
+      return res.status(404).json({ message: "Nie znaleziono tagów." });
     }
 
     const randomIndex = Math.floor(Math.random() * tags.length);
     const randomTag = tags[randomIndex];
-
+    //console.log("Random Tag:", randomTag.url);
     const lastFmResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "tag.getinfo",
-        tag: randomTag,
+        tag: randomTag.name,
         api_key: LAST_FM_API_KEY,
         format: "json",
       },
     });
 
     const tagData = lastFmResponse.data.tag;
-
+    console.log("Random Tag Data:", tagData);
     const lastFmResponse2 = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "tag.getTopTracks",
-        tag: randomTag,
+        tag: randomTag.name,
         api_key: LAST_FM_API_KEY,
         limit: 1,
         format: "json",
       },
     });
-    const topTrackData = lastFmResponse2.toptracks.track;
+    //console.log("Top Track:", lastFmResponse2);
+    const topTracks = lastFmResponse2.data.tracks.track;
+
+    const topTrack = Array.isArray(topTracks) ? topTracks[0] : topTracks; // Obsługa przypadku, gdy `track` jest tablicą lub obiektem
+    //  console.log("Top Track:", topTracks);
+    // console.log("Top Track Name:", topTrack.name);
     // Zwróć dane
     res.json({
       Genre: {
         name: tagData.name,
         wiki: tagData.wiki.summary,
-        url: tagData.url,
+        url: randomTag.url,
       },
       TopTrack: {
-        name: topTrackData.name,
+        name: topTrack.name,
+        artist: topTrack.artist,
       },
     });
   } catch (error) {
