@@ -12,3 +12,29 @@ export const fetchRandomAlbum = async () => {
     );
   }
 };
+
+export const fetchRandomArtist = async () => {
+  try {
+    const response = await api.get("/music/random-artist");
+    console.log("Artist object:", response.data);
+    return response.data; // Zwróć dane albumu
+  } catch (err) {
+    console.error("Nie udało się pobrać danych artysty:", err);
+    throw new Error(
+      "Wystąpił błąd podczas pobierania losowego artysty. Spróbuj ponownie."
+    );
+  }
+};
+
+export const fetchRandomSong = async () => {
+  try {
+    const response = await api.get("/music/random-song");
+    console.log("Song object:", response.data);
+    return response.data; // Zwróć dane albumu
+  } catch (err) {
+    console.error("Nie udało się pobrać danych utworu:", err);
+    throw new Error(
+      "Wystąpił błąd podczas pobierania losowego utworu. Spróbuj ponownie."
+    );
+  }
+};

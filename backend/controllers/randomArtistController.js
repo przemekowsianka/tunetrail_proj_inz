@@ -79,7 +79,7 @@ exports.getRandomArtist = async (req, res) => {
     res.json({
       lastFm: {
         name: artistData.name,
-        bio: artistData.bio.summary,
+        bio: artistData.bio.content,
         url: artistData.url,
         mbid: mbid,
         tag1: tags[0],
