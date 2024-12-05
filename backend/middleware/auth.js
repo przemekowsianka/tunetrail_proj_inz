@@ -6,6 +6,7 @@ module.exports = (req, res, next) => {
 
   jwt.verify(token, process.env.TOKEN, (err, user) => {
     if (err) return res.status(403).json({ message: "Błędny token" });
+    console.log("Decoded JWT payload:", user);
     req.user = user;
     next();
   });
