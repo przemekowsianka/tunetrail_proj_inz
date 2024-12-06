@@ -27,11 +27,12 @@ exports.login = async (req, res) => {
         "JWT_SECRET is not defined. Please set it in your .env file."
       );
     }
-    const token = jwt.sign({ id: user._id }, process.env.TOKEN, {
+    // console.log("user id: ", user.id);
+    const token = jwt.sign({ id: user.id }, process.env.TOKEN, {
       expiresIn: "1h",
     });
     res.json({ token });
-    console.log("token: ", token);
+    //  console.log("token: ", token);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -14,7 +14,7 @@ exports.getRandomAlbum = async (req, res) => {
         format: "json",
       },
     });
-    console.log("Odpowiedź Last.fm (artysci):", topArtistsResponse.data);
+    //console.log("Odpowiedź Last.fm (artysci):", topArtistsResponse.data);
     const artists = topArtistsResponse.data.artists.artist;
 
     if (!artists || artists.length === 0) {
@@ -35,8 +35,8 @@ exports.getRandomAlbum = async (req, res) => {
 
     const albums = topAlbumsResponse.data.topalbums.album;
 
-    console.log("Artists fetched:", artists);
-    console.log("Albums fetched for artist:", albums);
+    //console.log("Artists fetched:", artists);
+    //console.log("Albums fetched for artist:", albums);
 
     if (!albums || albums.length === 0) {
       return res.status(404).json({

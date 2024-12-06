@@ -18,41 +18,41 @@ const DiscoveredArtists = require("./discovered_artists");
 User.hasMany(Playlists, { foreignKey: "play_uid" });
 Playlists.belongsTo(User, { foreignKey: "play_uid" });
 
-User.hasMany(UserAPI, { foreignKey: "uapi_uid" });
-UserAPI.belongsTo(User, { foreignKey: "uapi_uid" });
+User.hasMany(UserAPI, { foreignKey: "user_id" });
+UserAPI.belongsTo(User, { foreignKey: "user_id" });
 
 User.hasMany(UserListenings, { foreignKey: "ul_uid" });
 UserListenings.belongsTo(User, { foreignKey: "ul_uid" });
 
-User.hasMany(ImportedSongs, { foreignKey: "is_uid" });
-ImportedSongs.belongsTo(User, { foreignKey: "is_uid" });
+User.hasMany(ImportedSongs, { foreignKey: "user_id" });
+ImportedSongs.belongsTo(User, { foreignKey: "user_id" });
 
-User.hasMany(ImportedArtists, { foreignKey: "ia_uid" });
-ImportedArtists.belongsTo(User, { foreignKey: "ia_uid" });
+User.hasMany(ImportedArtists, { foreignKey: "iuser_id" });
+ImportedArtists.belongsTo(User, { foreignKey: "user_id" });
 
-User.hasMany(ImportedGenres, { foreignKey: "ig_uid" });
-ImportedGenres.belongsTo(User, { foreignKey: "ig_uid" });
+User.hasMany(ImportedGenres, { foreignKey: "user_id" });
+ImportedGenres.belongsTo(User, { foreignKey: "user_id" });
 
-User.hasMany(DiscoveredArtists, { foreignKey: "da_uid" });
-DiscoveredArtists.belongsTo(User, { foreignKey: "da_uid" });
+User.hasMany(DiscoveredArtists, { foreignKey: "user_id" });
+DiscoveredArtists.belongsTo(User, { foreignKey: "user_id" });
 
 DiscoveredArtists.hasMany(DiscoveredArtistsSongs, { foreignKey: "das_da" });
 DiscoveredArtistsSongs.belongsTo(DiscoveredArtists, { foreignKey: "das_da" });
 
-ImportedGenres.hasMany(ImportedArtists, { foreignKey: "ia_g1" });
-ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "ia_g1" });
+ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre1" });
+ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre1" });
 
-ImportedGenres.hasMany(ImportedArtists, { foreignKey: "ia_g2" });
-ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "ia_g2" });
+ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre2" });
+ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre2" });
 
-ImportedGenres.hasMany(ImportedArtists, { foreignKey: "ia_g3" });
-ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "ia_g3" });
+ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre3" });
+ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre3" });
 
-ImportedGenres.hasMany(ImportedSongs, { foreignKey: "is_g" });
-ImportedSongs.belongsTo(ImportedGenres, { foreignKey: "is_g" });
+ImportedGenres.hasMany(ImportedSongs, { foreignKey: "genre" });
+ImportedSongs.belongsTo(ImportedGenres, { foreignKey: "genre" });
 
-ImportedArtists.hasMany(ImportedSongs, { foreignKey: "is_a" });
-ImportedSongs.belongsTo(ImportedArtists, { foreignKey: "is_a" });
+ImportedArtists.hasMany(ImportedSongs, { foreignKey: "artist_id" });
+ImportedSongs.belongsTo(ImportedArtists, { foreignKey: "artist_id" });
 
 UserAPI.hasMany(Playlists, { foreignKey: "play_api" });
 Playlists.belongsTo(UserAPI, { foreignKey: "play_api" });

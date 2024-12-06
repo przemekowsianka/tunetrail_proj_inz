@@ -5,12 +5,20 @@ const { sequelize } = require("./models");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const musicRoutes = require("./routes/musicRoutes");
+
 const axios = require("axios");
 const app = express();
 
 // Middleware globalne
 const cors = require("cors");
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:4000"],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 app.use(express.json()); // Parsowanie JSON dla żądań
 
 // Middleware do obsługi błędów JSON
@@ -82,7 +90,7 @@ app.listen(PORT, () => {
         format: "json",
       },
     });
-    console.log("Test połączenia z Last.fm:", response.data);
+    // console.log("Test połączenia z Last.fm:", response.data);
   } catch (error) {
     console.error("Błąd połączenia z Last.fm:", error.message);
     if (error.response) {

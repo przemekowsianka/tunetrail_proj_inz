@@ -17,14 +17,14 @@ exports.getRandomArtist = async (req, res) => {
     });
 
     const artists = topArtistsResponse.data.artists.artist;
-    console.log(artists);
+    // console.log(artists);
     if (!artists || artists.length === 0) {
       return res.status(404).json({ message: "Nie znaleziono artystów." });
     }
 
     const randomIndex = Math.floor(Math.random() * artists.length);
     const randomArtist = artists[randomIndex];
-    console.log(randomArtist);
+    //  console.log(randomArtist);
     const lastFmResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "artist.getInfo",
@@ -36,7 +36,7 @@ exports.getRandomArtist = async (req, res) => {
 
     const artistData = lastFmResponse.data?.artist;
     // console.log(lastFmResponse);
-    console.log(artistData);
+    //  console.log(artistData);
     const mbid = artistData.mbid;
 
     if (!mbid) {
