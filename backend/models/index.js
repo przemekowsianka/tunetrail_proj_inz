@@ -39,20 +39,24 @@ DiscoveredArtists.belongsTo(User, { foreignKey: "user_id" });
 // DiscoveredArtists.hasMany(DiscoveredArtistsSongs, { foreignKey: "das_da" });
 // DiscoveredArtistsSongs.belongsTo(DiscoveredArtists, { foreignKey: "das_da" });
 
-ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre1" });
-ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre1" });
+//TO TRZEBA BEDZIE ODKOMENTOWAĆ ZAPEWNE \/
 
-ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre2" });
-ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre2" });
+// ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre1" });
+// ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre1" });
 
-ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre3" });
-ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre3" });
+// ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre2" });
+// ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre2" });
 
-ImportedGenres.hasMany(ImportedSongs, { foreignKey: "genre" });
-ImportedSongs.belongsTo(ImportedGenres, { foreignKey: "genre" });
+// ImportedGenres.hasMany(ImportedArtists, { foreignKey: "genre3" });
+// ImportedArtists.belongsTo(ImportedGenres, { foreignKey: "genre3" });
 
-ImportedArtists.hasMany(ImportedSongs, { foreignKey: "artist_id" });
-ImportedSongs.belongsTo(ImportedArtists, { foreignKey: "artist_id" });
+// ImportedGenres.hasMany(ImportedSongs, { foreignKey: "genre" });
+// ImportedSongs.belongsTo(ImportedGenres, { foreignKey: "genre" });
+
+// ImportedArtists.hasMany(ImportedSongs, { foreignKey: "artist_id" });
+// ImportedSongs.belongsTo(ImportedArtists, { foreignKey: "artist_id" });
+
+// TO /\
 
 // UserAPI.hasMany(Playlists, { foreignKey: "play_api" });
 // Playlists.belongsTo(UserAPI, { foreignKey: "play_api" });

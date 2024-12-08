@@ -28,6 +28,7 @@ exports.getUserTopArtists = async (req, res) => {
     const response = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "user.gettopartists",
+        period: "1month",
         user: user.lastfm_account,
         api_key: process.env.LASTFM_API_KEY,
         format: "json",
@@ -116,6 +117,7 @@ exports.getUserTopTracks = async (req, res) => {
     const response = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "user.gettoptracks",
+        period: "1month",
         user: user.lastfm_account,
         api_key: process.env.LASTFM_API_KEY,
         format: "json",
@@ -127,6 +129,8 @@ exports.getUserTopTracks = async (req, res) => {
 
     // Zapisywanie utworów do bazy danych
     for (const track of tracks) {
+      console.log("TRACK NAME: ", track.name);
+      console.log("TRACK ARTIST NAME: ", track.artist.name);
       const lastFmResponse2 = await axios.get(`${LAST_FM_BASE_URL}`, {
         params: {
           method: "track.getTopTags",
@@ -143,64 +147,82 @@ exports.getUserTopTracks = async (req, res) => {
       //console.log("Tagi: ", lastFmResponse2);
       const tags = lastFmResponse2.data.toptags.tag;
       // console.log("saving track: ", track);
-      const artistMbid = track.artist.mbid;
-      let artist = await ImportedArtists.findOne({
-        where: { mbid: artistMbid },
+      // const artistMbid = track.artist.mbid;
+      // let artist = await ImportedArtists.findOne({
+      //   where: { mbid: artistMbid },
+      // });
+
+      // // Jeśli artysta nie istnieje, dodaj go do tabeli
+      // if (!artist) {
+      //   artist = await ImportedArtists.create({
+      //     mbid: artistMbid || null, // lub "Unknown" jeśli brak ID
+      //     user_id: userId,
+      //     name: track.artist.name,
+      //     playcount: 0, // lub inne wartości domyślne
+      //   });
+      const existingTrack = await ImportedSongs.findOne({
+        where: {
+          mbid: track.mbid,
+        },
       });
 
-      // Jeśli artysta nie istnieje, dodaj go do tabeli
-      if (!artist) {
-        artist = await ImportedArtists.create({
-          mbid: artistMbid || null, // lub "Unknown" jeśli brak ID
-          user_id: userId,
-          name: track.artist.name,
-          playcount: 0, // lub inne wartości domyślne
-        });
-      }
-      try {
-        await ImportedSongs.create({
-          mbid: track.mbid,
-          user_id: userId,
-          artist_id: track.artist.mbid,
-          title: track.name,
+      if (existingTrack) {
+        // Jeśli istnieje, zaktualizuj playcount
+        await existingTrack.update({
           playcount: track.playcount,
-          genre: tags[0].name,
         });
-      } catch (error) {
-        console.error("Błąd zapisu piosenki:", error.message);
-      }
-
-      for (let i = 0; i < 5; i++) {
-        const tagName = tags[i].name;
-        console.log("TAG NAME: ", tagName);
-        // Sprawdź, czy tag już istnieje w ImportedGenres
-        const existingGenre = await ImportedGenres.findOne({
-          where: {
-            name: tagName,
-            user_id: userId,
-          },
-        });
-
-        if (existingGenre) {
-          // Jeśli istnieje, zaktualizuj playcount
-          await existingGenre.update({
-            playcount: existingGenre.playcount + track.playcount,
-          });
+      } else {
+        let genre = "undefined";
+        if (tags.length == 0) {
+          genre = "undefined";
         } else {
-          // Jeśli nie istnieje, utwórz nowy rekord
-          try {
-            await ImportedGenres.create({
+          genre = tags[0].name;
+        }
+        try {
+          await ImportedSongs.create({
+            mbid: track.mbid,
+            user_id: userId,
+            artist_id: track.artist.mbid,
+            title: track.name,
+            playcount: track.playcount,
+            genre: genre,
+          });
+        } catch (error) {
+          console.error("Błąd zapisu piosenki:", error.message);
+        }
+
+        for (let i = 0; i < 3 || i < tags.length; i++) {
+          const tagName = tags[i].name;
+          console.log("TAG NAME: ", tagName);
+          // Sprawdź, czy tag już istnieje w ImportedGenres
+          const existingGenre = await ImportedGenres.findOne({
+            where: {
               name: tagName,
               user_id: userId,
-              playcount: track.playcount,
+            },
+          });
+
+          if (existingGenre) {
+            // Jeśli istnieje, zaktualizuj playcount
+            await existingGenre.update({
+              playcount: existingGenre.playcount + track.playcount,
             });
-          } catch (error) {
-            console.error("Błąd zapisu artysty:", error.message);
+            continue;
+          } else {
+            // Jeśli nie istnieje, utwórz nowy rekord
+            try {
+              await ImportedGenres.create({
+                name: tagName,
+                user_id: userId,
+                playcount: track.playcount,
+              });
+            } catch (error) {
+              console.error("Błąd zapisu getunku:", error.message);
+            }
           }
         }
       }
     }
-
     res.json(response.data);
   } catch (error) {
     res.status(500).json({ error: error.message });
