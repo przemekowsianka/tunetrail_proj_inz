@@ -4,11 +4,17 @@ const sequelize = require("../config/database"); // Połączenie z bazą danych
 const DiscoveredArtists = sequelize.define(
   "DiscoveredArtists",
   {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      unique: true,
+    },
     mbid: {
       type: DataTypes.STRING,
-      primaryKey: true,
-      allowNull: false,
-      unique: true,
+      // primaryKey: true,
+      // allowNull: false,
+      // unique: true,
     },
     user_id: {
       type: DataTypes.INTEGER,
@@ -35,7 +41,7 @@ const DiscoveredArtists = sequelize.define(
     },
     spotify_link: {
       type: DataTypes.STRING,
-      allowNull: false,
+      // allowNull: false,
     },
   },
   {

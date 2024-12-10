@@ -5,6 +5,7 @@ const randomTagController = require("../controllers/randomTagController");
 const randomSongController = require("../controllers/randomSongController");
 const randomAlbumController = require("../controllers/randomAlbumController");
 const randomArtistController = require("../controllers/randomArtistController");
+const artistDiscoverController = require("../controllers/artistDiscoverController");
 
 const auth = require("../middleware/auth"); // Middleware do autoryzacji
 
@@ -16,5 +17,7 @@ router.get("/random-tag", randomTagController.getRandomTag);
 router.get("/random-song", randomSongController.getRandomSong);
 router.get("/random-album", randomAlbumController.getRandomAlbum);
 router.get("/random-artist", randomArtistController.getRandomArtist);
+
+router.get("/discover", auth, artistDiscoverController.discoverArtist);
 
 module.exports = router;

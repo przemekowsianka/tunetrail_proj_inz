@@ -33,11 +33,11 @@ exports.getUserTopArtists = async (req, res) => {
     const response = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "user.gettopartists",
-        period: "1month",
+        // period: "1month",
         user: user.lastfm_account,
         api_key: process.env.LASTFM_API_KEY,
         format: "json",
-        limit: 50,
+        limit: 1000,
       },
     });
 
@@ -65,20 +65,20 @@ exports.getUserTopArtists = async (req, res) => {
         continue; // Przejdź do następnej iteracji, jeśli brak tagów
       }
       //const genre_names = details.name;
-      for (let int = 0; int < details.length; int++) {
-        let genre = await ImportedGenres.findOne({
-          where: { name: details[int].name },
-        });
+      // for (let int = 0; int < details.length; int++) {
+      //   let genre = await ImportedGenres.findOne({
+      //     where: { name: details[int].name },
+      //   });
 
-        // Jeśli artysta nie istnieje, dodaj go do tabeli
-        if (!genre) {
-          genre = await ImportedGenres.create({
-            user_id: userId,
-            name: details[int].name,
-            playcount: 0, // lub inne wartości domyślne
-          });
-        }
-      }
+      //   // Jeśli artysta nie istnieje, dodaj go do tabeli
+      //   if (!genre) {
+      //     genre = await ImportedGenres.create({
+      //       user_id: userId,
+      //       name: details[int].name,
+      //       playcount: 0, // lub inne wartości domyślne
+      //     });
+      //   }
+      // }
       try {
         await ImportedArtists.create({
           mbid: artist.mbid || null,
@@ -136,7 +136,7 @@ exports.getUserTopTracks = async (req, res) => {
         user: user.lastfm_account,
         api_key: process.env.LASTFM_API_KEY,
         format: "json",
-        limit: 50,
+        limit: 100,
       },
     });
 
