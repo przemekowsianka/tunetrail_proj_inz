@@ -44,36 +44,27 @@ exports.getRandomAlbum = async (req, res) => {
       });
     }
 
-    // // Wybierz albumy, które mają więcej niż jedną piosenkę
-    // const validAlbums = [];
-    // for (const album of albums) {
-    //   const albumDetailsResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
-    //     params: {
-    //       method: "album.getinfo",
-    //       api_key: LAST_FM_API_KEY,
-    //       artist: album.artist.name,
-    //       album: album.name,
-    //       format: "json",
-    //     },
-    //   });
-
-    //   const tracks = albumDetailsResponse.data.album?.tracks?.track;
-
-    //   // Jeśli liczba utworów jest większa niż 1, dodaj do listy
-    //   if (Array.isArray(tracks) && tracks.length > 1) {
-    //     validAlbums.push(album);
-    //   }
-    // }
-    // console.log(validAlbums);
-    // if (validAlbums.length === 0) {
-    //   return res.status(404).json({
-    //     message: `Nie znaleziono albumów z więcej niż jedną piosenką dla artysty ${randomArtist.name}.`,
-    //   });
-    // }
-    // Wybierz losowy album
     const randomAlbumIndex = Math.floor(Math.random() * albums.length);
     const randomAlbum = albums[randomAlbumIndex];
-
+    console.log("RANDOM ALBUM: ", randomAlbum.name);
+    const detailsResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
+      params: {
+        method: "album.getInfo",
+        artist: randomArtist.name,
+        album: randomAlbum.name,
+        api_key: LAST_FM_API_KEY,
+        format: "json",
+      },
+    });
+    const tracks = detailsResponse.data.album.tracks?.track || [];
+    for (const track of tracks) {
+      console.log("RANDOM ALBUM TRACK: ", track.name);
+    }
+    if (tracks <= 1) {
+      return exports.getRandomAlbum;
+    }
+    //(req, res)
+    const tags = detailsResponse.data.album.tags?.tag || [];
     const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji
     const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
       headers: { Authorization: `Bearer ${spotifyToken}` },
@@ -96,6 +87,9 @@ exports.getRandomAlbum = async (req, res) => {
         randomAlbum.image.find((img) => img.size === "large")?.["#text"] ||
         null,
       urlSpotify: spotifyAlbum ? spotifyAlbum.external_urls.spotify : null,
+      genre1: tags[0]?.name || null,
+      genre2: tags[1]?.name || null,
+      genre3: tags[2]?.name || null,
     });
   } catch (error) {
     console.error("Błąd podczas pobierania danych:", error.message);

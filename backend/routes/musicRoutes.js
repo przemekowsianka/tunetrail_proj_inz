@@ -6,12 +6,14 @@ const randomSongController = require("../controllers/randomSongController");
 const randomAlbumController = require("../controllers/randomAlbumController");
 const randomArtistController = require("../controllers/randomArtistController");
 const artistDiscoverController = require("../controllers/artistDiscoverController");
+const recentArtistsController = require("../controllers/recentArtistsController");
 
 const auth = require("../middleware/auth"); // Middleware do autoryzacji
 
 // Trasy do pobierania danych z Last.fm
 router.get("/top-artists", auth, userMusicController.getUserTopArtists);
 router.get("/top-tracks", auth, userMusicController.getUserTopTracks);
+router.get("/recent-artists", auth, recentArtistsController.getUserTopArtists);
 
 router.get("/random-tag", randomTagController.getRandomTag);
 router.get("/random-song", randomSongController.getRandomSong);

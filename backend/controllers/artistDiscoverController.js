@@ -52,6 +52,7 @@ exports.discoverArtist = async (req, res) => {
         console.log("CANDIDATE NAME: ", candidateArtist.name);
         const isAlreadyImported = await ImportedArtists.findOne({
           where: {
+            user_id: userId,
             [Op.or]: [
               { name: candidateArtist.name },
               { mbid: candidateArtist.mbid || null },
@@ -60,6 +61,7 @@ exports.discoverArtist = async (req, res) => {
         });
         const isAlreadyDiscovered = await DiscoveredArtists.findOne({
           where: {
+            user_id: userId,
             [Op.or]: [
               { name: candidateArtist.name },
               { mbid: candidateArtist.mbid || null },
@@ -81,6 +83,18 @@ exports.discoverArtist = async (req, res) => {
           const artistData = artistInfoResponse.data?.artist;
           if (!artistData || artistData.listeners < maxPopularity) continue; // Jeśli brak danych artysty, spróbuj kolejnego
           console.log("DISCOVERED ARTIST NAME: ", artistData.name);
+          const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji
+          const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
+            headers: { Authorization: `Bearer ${spotifyToken}` },
+            params: {
+              q: artistData.name,
+              type: "artist",
+              limit: 1,
+            },
+          });
+
+          const spotifyArtist = spotifyResponse.data.artists.items[0];
+
           // Zapisz do tabeli DiscoveredArtists
           await DiscoveredArtists.create({
             user_id: userId,
@@ -100,6 +114,7 @@ exports.discoverArtist = async (req, res) => {
               mbid: artistData.mbid,
               url: artistData.url,
               bio: artistData.bio?.content,
+              spotify_url: spotifyArtist.external_urls.spotify,
             },
           });
         }

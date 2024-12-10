@@ -2,6 +2,7 @@ const axios = require("axios");
 const Sequelize = require("../config/database");
 const { Op } = require("sequelize");
 const ImportedArtists = require("../models/imported_artists");
+const DiscoveredArtists = require("../models/discovered_artists");
 const ImportedGenres = require("../models/imported_genres");
 const ImportedSongs = require("../models/imported_songs");
 const UserAPI = require("../models/users_api");
@@ -45,53 +46,68 @@ exports.getUserTopArtists = async (req, res) => {
     //console.log("top artysci: ", artists);
     // Zapisywanie artystów do bazy danych
     for (const artist of artists) {
-      console.log("saving artist: ", artist);
-
-      const lastFmResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
-        params: {
-          method: "artist.getTopTags",
-          artist: artist.name,
-          api_key: process.env.LASTFM_API_KEY,
-          format: "json",
+      const isAlreadyImported = await ImportedArtists.findOne({
+        where: {
+          user_id: userId,
+          [Op.or]: [{ name: artist.name }, { mbid: artist.mbid || null }],
         },
       });
-      // console.log(
-      //   "Odpowiedź Last.fm (artist.getTopTags):",
-      //   JSON.stringify(lastFmResponse.data, null, 2)
-      // );
-      const details = lastFmResponse.data.toptags?.tag || [];
-      if (details.length === 0) {
-        console.log(`Brak tagów dla artysty: ${artist.name}`);
-        continue; // Przejdź do następnej iteracji, jeśli brak tagów
-      }
-      //const genre_names = details.name;
-      // for (let int = 0; int < details.length; int++) {
-      //   let genre = await ImportedGenres.findOne({
-      //     where: { name: details[int].name },
-      //   });
-
-      //   // Jeśli artysta nie istnieje, dodaj go do tabeli
-      //   if (!genre) {
-      //     genre = await ImportedGenres.create({
-      //       user_id: userId,
-      //       name: details[int].name,
-      //       playcount: 0, // lub inne wartości domyślne
-      //     });
-      //   }
-      // }
-      try {
-        await ImportedArtists.create({
-          mbid: artist.mbid || null,
+      const isAlreadyDiscovered = await DiscoveredArtists.findOne({
+        where: {
           user_id: userId,
-          name: artist.name,
-          // listeners: artist.listeners,
-          playcount: artist.playcount,
-          genre1: details[0].name,
-          genre2: details[1].name,
-          genre3: details[2].name,
+          [Op.or]: [{ name: artist.name }, { mbid: artist.mbid || null }],
+        },
+      });
+
+      if (!isAlreadyImported && !isAlreadyDiscovered) {
+        console.log("saving artist: ", artist.name);
+
+        const lastFmResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
+          params: {
+            method: "artist.getTopTags",
+            artist: artist.name,
+            api_key: process.env.LASTFM_API_KEY,
+            format: "json",
+          },
         });
-      } catch (error) {
-        console.error("Błąd zapisu artysty:", error.message);
+        // console.log(
+        //   "Odpowiedź Last.fm (artist.getTopTags):",
+        //   JSON.stringify(lastFmResponse.data, null, 2)
+        // );
+        const details = lastFmResponse.data.toptags?.tag || [];
+        if (details.length === 0) {
+          console.log(`Brak tagów dla artysty: ${artist.name}`);
+          continue; // Przejdź do następnej iteracji, jeśli brak tagów
+        }
+        //const genre_names = details.name;
+        // for (let int = 0; int < details.length; int++) {
+        //   let genre = await ImportedGenres.findOne({
+        //     where: { name: details[int].name },
+        //   });
+
+        //   // Jeśli artysta nie istnieje, dodaj go do tabeli
+        //   if (!genre) {
+        //     genre = await ImportedGenres.create({
+        //       user_id: userId,
+        //       name: details[int].name,
+        //       playcount: 0, // lub inne wartości domyślne
+        //     });
+        //   }
+        // }
+        try {
+          await ImportedArtists.create({
+            mbid: artist.mbid || null,
+            user_id: userId,
+            name: artist.name,
+            // listeners: artist.listeners,
+            playcount: artist.playcount,
+            genre1: details[0].name,
+            genre2: details[1].name,
+            genre3: details[2].name,
+          });
+        } catch (error) {
+          console.error("Błąd zapisu artysty:", error.message);
+        }
       }
     }
 

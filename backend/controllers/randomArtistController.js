@@ -54,14 +54,6 @@ exports.getRandomArtist = async (req, res) => {
       },
     });
     const tags = lastFmResponse2.data.toptags.tag;
-    // const musicBrainzResponse = await axios.get(
-    //   `${MUSICBRAINZ_BASE_URL}artist/${mbid}`,
-    //   {
-    //     params: { fmt: "json" },
-    //   }
-    // );
-    // console.log("MUSIC BRAINZ RESPONSE:    ", musicBrainzResponse);
-    // const aliases = musicBrainzResponse.data.aliases.map((alias) => alias.name);
 
     const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji
     const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
@@ -82,9 +74,9 @@ exports.getRandomArtist = async (req, res) => {
         bio: artistData.bio.content,
         url: artistData.url,
         mbid: mbid,
-        tag1: tags[0],
-        tag2: tags[1],
-        tag3: tags[2],
+        tag1: tags[0].name,
+        tag2: tags[1].name,
+        tag3: tags[2].name,
       },
       // musicBrainz: {
       //   aliases: aliases,
