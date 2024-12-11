@@ -1,6 +1,7 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { registerUser } from "../services/api";
+import { Button, Form, Container, Row, Col } from "react-bootstrap";
 
 const RegisterForm = () => {
   const {
@@ -15,7 +16,6 @@ const RegisterForm = () => {
   const onSubmit = async (data) => {
     console.log("Submitting data:", JSON.stringify(data));
     try {
-      // Wywołanie funkcji API z danymi z formularza
       const response = await registerUser({
         login: data.username,
         email: data.email,
@@ -28,69 +28,115 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="login-form">
-      <h2>Rejestracja</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label>Email:</label>
-          <input
-            type="email"
-            {...register("email", {
-              required: "Email jest wymagany",
-              pattern: {
-                value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
-                message: "Niepoprawny format email",
-              },
-            })}
-          />
-          {errors.email && <p>{errors.email.message}</p>}
-        </div>
+    <Container fluid className="min-vh-100 d-flex">
+      <Row className="w-100">
+        <Col
+          md={6}
+          className="bg-primary text-white d-flex flex-column justify-content-center align-items-center"
+        >
+          <h1 className="display-3">TuneTrail</h1>
+        </Col>
 
-        <div>
-          <label>Login:</label>
-          <input
-            type="username"
-            {...register("username", {
-              required: "Login jest wymagany",
-              pattern: {
-                value: /^[a-zA-Z0-9_.+-]{3,}$/,
-                message: "Niepoprawny format login (min.3 znaki)",
-              },
-            })}
-          />
-          {errors.username && <p>{errors.username.message}</p>}
-        </div>
+        <Col
+          md={6}
+          className="d-flex justify-content-center align-items-center"
+        >
+          <div className="w-75">
+            <h2 className="text-center mb-4">Rejestracja</h2>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Form.Group className="mb-3" controlId="formEmail">
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  type="email"
+                  placeholder="Wprowadź email"
+                  {...register("email", {
+                    required: "Email jest wymagany",
+                    pattern: {
+                      value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                      message: "Niepoprawny format email",
+                    },
+                  })}
+                  isInvalid={!!errors.email}
+                />
+                {errors.email && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.email.message}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
 
-        <div>
-          <label>Hasło:</label>
-          <input
-            type="password"
-            {...register("password", {
-              required: "Hasło jest wymagane",
-              minLength: {
-                value: 8,
-                message: "Hasło musi mieć przynajmniej 8 znaków",
-              },
-            })}
-          />
-          {errors.password && <p>{errors.password.message}</p>}
-        </div>
-        <div>
-          <label>Potwierdź hasło:</label>
-          <input
-            type="password"
-            {...register("confirmPassword", {
-              required: "Potwierdzenie hasła jest wymagane",
-              validate: (value) =>
-                value === password || "Hasła muszą być takie same",
-            })}
-          />
-          {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
-        </div>
-        <button type="submit">Zarejestruj się</button>
-      </form>
-      <button>Masz konto? Zaloguj się</button>
-    </div>
+              <Form.Group className="mb-3" controlId="formUsername">
+                <Form.Label>Login</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Wprowadź login"
+                  {...register("username", {
+                    required: "Login jest wymagany",
+                    pattern: {
+                      value: /^[a-zA-Z0-9_.+-]{3,}$/,
+                      message: "Niepoprawny format login (min.3 znaki)",
+                    },
+                  })}
+                  isInvalid={!!errors.username}
+                />
+                {errors.username && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.username.message}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formPassword">
+                <Form.Label>Hasło</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Wprowadź hasło"
+                  {...register("password", {
+                    required: "Hasło jest wymagane",
+                    minLength: {
+                      value: 8,
+                      message: "Hasło musi mieć przynajmniej 8 znaków",
+                    },
+                  })}
+                  isInvalid={!!errors.password}
+                />
+                {errors.password && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password.message}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+
+              <Form.Group className="mb-3" controlId="formConfirmPassword">
+                <Form.Label>Potwierdź hasło</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Potwierdź hasło"
+                  {...register("confirmPassword", {
+                    required: "Potwierdzenie hasła jest wymagane",
+                    validate: (value) =>
+                      value === password || "Hasła muszą być takie same",
+                  })}
+                  isInvalid={!!errors.confirmPassword}
+                />
+                {errors.confirmPassword && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.confirmPassword.message}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+
+              <Button type="submit" variant="primary" className="w-100 mb-3">
+                Zarejestruj się
+              </Button>
+            </Form>
+            <div className="text-center">
+              <Button variant="link">Masz konto? Zaloguj się</Button>
+            </div>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

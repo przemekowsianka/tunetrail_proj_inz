@@ -66,7 +66,7 @@ exports.getRandomSong = async (req, res) => {
         format: "json",
       },
     });
-    console.log("Tagi: ", lastFmResponse2);
+    // console.log("Tagi: ", lastFmResponse2);
     const tags = lastFmResponse2.data.toptags.tag;
     // console.log("song data: ", songData);
     const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji

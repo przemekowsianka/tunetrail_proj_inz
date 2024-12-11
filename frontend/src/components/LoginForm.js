@@ -1,4 +1,6 @@
 import React from "react";
+import { Button, Form, Container, Row, Col } from "react-bootstrap";
+
 import { useForm } from "react-hook-form";
 import { loginUser } from "../services/api";
 
@@ -24,44 +26,78 @@ const LoginForm = () => {
     }
   };
   return (
-    <div className="login-form">
-      <h2>Logowanie</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
-          <label>Email lub login:</label>
-          <input
-            type="text"
-            {...register("identifier", {
-              required: "Email lub login jest wymagany",
-              pattern: {
-                value:
-                  /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$|^[a-zA-Z0-9_.+-]{3,}$/,
-                message: "Wprowadź poprawny email lub login (min. 3 znaki)",
-              },
-            })}
-          />
-          {errors.identifier && <p>{errors.identifier.message}</p>}
-        </div>
+    <Container fluid className="min-vh-100 d-flex">
+      <Row className="w-100">
+        <Col
+          md={6}
+          className="bg-primary text-white d-flex flex-column justify-content-center align-items-center"
+        >
+          <h1 className="display-3">TuneTrail</h1>
+        </Col>
 
-        <div>
-          <label>Hasło:</label>
-          <input
-            type="password"
-            {...register("password", {
-              required: "Hasło jest wymagane",
-              minLength: {
-                value: 8,
-                message: "Hasło musi mieć przynajmniej 8 znaków",
-              },
-            })}
-          />
-          {errors.password && <p>{errors.password.message}</p>}
-        </div>
+        <Col
+          md={6}
+          className="d-flex justify-content-center align-items-center"
+        >
+          <div className="w-75">
+            <h2 className="text-center mb-4">Logowanie</h2>
+            <Form onSubmit={handleSubmit(onSubmit)}>
+              <Form.Group className="mb-3" controlId="formIdentifier">
+                <Form.Label>Email lub login</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Wprowadź email lub login"
+                  {...register("identifier", {
+                    required: "Email lub login jest wymagany",
+                    pattern: {
+                      value:
+                        /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$|^[a-zA-Z0-9_.+-]{3,}$/,
+                      message:
+                        "Wprowadź poprawny email lub login (min. 3 znaki)",
+                    },
+                  })}
+                  isInvalid={!!errors.identifier}
+                />
+                {errors.identifier && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.identifier.message}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
 
-        <button type="submit">Zaloguj się</button>
-      </form>
-      <button>Nie masz konta? Zarejestruj się</button>
-    </div>
+              <Form.Group className="mb-3" controlId="formPassword">
+                <Form.Label>Hasło</Form.Label>
+                <Form.Control
+                  type="password"
+                  placeholder="Wprowadź hasło"
+                  {...register("password", {
+                    required: "Hasło jest wymagane",
+                    minLength: {
+                      value: 8,
+                      message: "Hasło musi mieć przynajmniej 8 znaków",
+                    },
+                  })}
+                  isInvalid={!!errors.password}
+                />
+                {errors.password && (
+                  <Form.Control.Feedback type="invalid">
+                    {errors.password.message}
+                  </Form.Control.Feedback>
+                )}
+              </Form.Group>
+
+              <Button type="submit" className="w-100" variant="primary">
+                Zaloguj się
+              </Button>
+            </Form>
+
+            <div className="text-center mt-3">
+              <Button variant="link">Nie masz konta? Zarejestruj się</Button>
+            </div>
+          </div>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 

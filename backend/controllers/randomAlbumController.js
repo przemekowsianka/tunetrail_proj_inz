@@ -56,15 +56,24 @@ exports.getRandomAlbum = async (req, res) => {
         format: "json",
       },
     });
-    const tracks = detailsResponse.data.album.tracks?.track || [];
-    for (const track of tracks) {
-      console.log("RANDOM ALBUM TRACK: ", track.name);
+    const tracksData = detailsResponse.data.album.tracks;
+    const tracks = Array.isArray(tracksData?.track)
+      ? tracksData.track
+      : tracksData?.track
+      ? [tracksData.track] // Jeśli jest pojedynczym obiektem, przekształć w tablicę
+      : [];
+
+    if (tracks.length > 0) {
+      for (const track of tracks) {
+        console.log("RANDOM ALBUM TRACK: ", track.name);
+      }
     }
-    if (tracks <= 1) {
-      return exports.getRandomAlbum;
+    if (tracks.length <= 1) {
+      return exports.getRandomAlbum(req, res);
     }
-    //(req, res)
+
     const tags = detailsResponse.data.album.tags?.tag || [];
+
     const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji
     const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
       headers: { Authorization: `Bearer ${spotifyToken}` },
