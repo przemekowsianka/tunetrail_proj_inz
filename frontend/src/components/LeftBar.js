@@ -8,6 +8,7 @@ const LeftBar = () => {
   const [username, setUsername] = useState(
     localStorage.getItem("lastFmUser") || ""
   ); // Pobieranie nazwy użytkownika z localStorage
+  const [isAccountSaved, setIsAccountSaved] = useState(false);
   const [activePage, setActivePage] = useState("home"); // Strona domyślna
   const navigate = useNavigate(); // Hook do nawigacji
   const token = localStorage.getItem("token"); // Pobranie tokena z localStorage
@@ -26,7 +27,7 @@ const LeftBar = () => {
         }
       );
       console.log("Last.fm account linked:", response.data);
-      localStorage.setItem("lastFmUser", username); // Zapisanie konta w localStorage
+      setIsAccountSaved(true); // Ustaw flagę na true, co ukryje formularz
     } catch (error) {
       console.error("Error linking Last.fm account:", error);
     }
@@ -104,7 +105,7 @@ const LeftBar = () => {
       </Button>
 
       {/* Formularz Last.fm - Tylko jeśli użytkownik nie ma zapisanego konta */}
-      {!username && (
+      {!isAccountSaved && (
         <Form onSubmit={handleLastFmSubmit} className="mt-4">
           <Form.Group controlId="formLastFmUsername" className="mb-3">
             <Form.Label className="text-white">Last.fm Username</Form.Label>
