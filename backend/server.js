@@ -5,6 +5,7 @@ const { sequelize } = require("./models");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
 const musicRoutes = require("./routes/musicRoutes");
+const showRoutes = require("./routes/showRoutes");
 
 const axios = require("axios");
 const app = express();
@@ -39,6 +40,7 @@ app.get("/api", (req, res) => {
 app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/music", musicRoutes);
+app.use("/api/show", showRoutes);
 
 // Konfiguracja połączenia z bazą MySQL
 const db = mysql.createConnection({

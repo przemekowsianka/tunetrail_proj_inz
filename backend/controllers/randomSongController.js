@@ -80,7 +80,8 @@ exports.getRandomSong = async (req, res) => {
     });
 
     const spotifySong = spotifyResponse.data.tracks.items[0];
-    console.log("MBID: ", mbid);
+
+    console.log("Spotify: ", spotifySong);
     // Zwróć dane
     res.json({
       mbid: mbid,
@@ -91,6 +92,7 @@ exports.getRandomSong = async (req, res) => {
       tag1: tags[0],
       tag2: tags[1],
       tag3: tags[2],
+      img: spotifySong ? spotifySong.album.images[0]?.url : null,
     });
   } catch (error) {
     console.error("Błąd podczas pobierania danych:", error.message);

@@ -29,7 +29,7 @@ const RecommendAlbum = () => {
   if (error) return <p>Błąd: {error}</p>;
 
   return (
-    <Container className="d-flex justify-content-center align-items-center min-vh-100">
+    <Container className="d-flex justify-content-center align-items-center max-vh-100">
       <Card className="w-75 p-4 bg-primary border-secondary">
         <Card.Header className="text-center bg-primary text-secondary border-secondary">
           <h2 className="mb-0">Polecamy Album</h2>
@@ -43,7 +43,8 @@ const RecommendAlbum = () => {
                     <img
                       src={album.imageLastFM}
                       alt={album.name}
-                      className="img-fluid mb-3"
+                      className="img-fluid mb-3 w-50"
+                      style={{ borderRadius: "8px" }}
                     />
                   )}
                   <h3>{album.name}</h3>

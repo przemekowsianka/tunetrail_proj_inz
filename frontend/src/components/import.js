@@ -1,96 +1,125 @@
 import React, { useState } from "react";
-const token = localStorage.getItem("token");
+import { Container, Card, Button, Alert, Spinner } from "react-bootstrap";
+import api from "../http/requestInterceptor"; // Użycie interceptora
 
-const FetchUserData = () => {
-  const [results, setResults] = useState({
-    artists: null,
-    tracks: null,
-    tags: null,
-  });
-  const [error, setError] = useState(null);
+const ImportUserData = () => {
+  const [loading, setLoading] = useState(false); // Flaga do stanu ładowania
+  const [message, setMessage] = useState(""); // Komunikat dla użytkownika
+  const [error, setError] = useState(null); // Obsługa błędów
 
-  const fetchData = async () => {
+  /**
+   * Funkcja do obsługi importu danych
+   * @param {string} endpoint - Endpoint, do którego wysyłane jest żądanie
+   * @param {string} successMessage - Wiadomość sukcesu wyświetlana użytkownikowi
+   */
+  const importData = async (endpoint, successMessage) => {
     try {
-      const userId = 7; // Zamień na właściwy userId
-      const headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Upewnij się, że token jest prawidłowy
-      };
+      setLoading(true);
+      setMessage(""); // Czyścimy poprzedni komunikat
+      setError(null); // Czyścimy poprzedni błąd
 
-      // Wywołanie funkcji pobierających dane
-      const [artistsResponse, tracksResponse, tagsResponse] = await Promise.all(
-        [
-          fetch(`/api/music/top-artists?user_id=${userId}`, { headers }),
-          fetch(`/api/music/top-tracks?user_id=${userId}`, { headers }),
-          fetch(`/api/music/top-tags?user_id=${userId}`, { headers }),
-        ]
-      );
+      // Wysłanie żądania POST do API (używamy interceptora, więc token jest automatyczny)
+      const response = await api.post(endpoint);
 
-      // Sprawdzenie nagłówka Content-Type
-      console.log(
-        "Artists Response Content-Type:",
-        artistsResponse.headers.get("Content-Type")
-      );
-      console.log(
-        "Tracks Response Content-Type:",
-        tracksResponse.headers.get("Content-Type")
-      );
-      console.log(
-        "Tags Response Content-Type:",
-        tagsResponse.headers.get("Content-Type")
-      );
-
-      // Sprawdzenie, czy odpowiedź jest JSON
-      if (!artistsResponse.ok) {
-        throw new Error("Błąd odpowiedzi z API dla Top Artists");
-      }
-      if (!tracksResponse.ok) {
-        throw new Error("Błąd odpowiedzi z API dla Top Tracks");
-      }
-      if (!tagsResponse.ok) {
-        throw new Error("Błąd odpowiedzi z API dla Top Tags");
-      }
-
-      const artistsData = await artistsResponse.json();
-      const tracksData = await tracksResponse.json();
-      const tagsData = await tagsResponse.json();
-
-      setResults({
-        artists: artistsData,
-        tracks: tracksData,
-        tags: tagsData,
-      });
-      setError(null);
+      console.log("Response from", endpoint, response.data);
+      setMessage(successMessage);
     } catch (error) {
-      console.error("Wystąpił błąd:", error);
-      setError("Wystąpił błąd podczas pobierania danych.");
+      console.error("Błąd podczas importowania danych:", error);
+      setError(
+        error.response?.data?.message ||
+          "Wystąpił błąd podczas importowania danych."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div>
-      <button onClick={fetchData}>Pobierz dane użytkownika</button>
-      {error && <div style={{ color: "red" }}>{error}</div>}
-      {results.artists && (
-        <div>
-          <h2>Top Artists</h2>
-          <pre>{JSON.stringify(results.artists, null, 2)}</pre>
-        </div>
-      )}
-      {results.tracks && (
-        <div>
-          <h2>Top Tracks</h2>
-          <pre>{JSON.stringify(results.tracks, null, 2)}</pre>
-        </div>
-      )}
-      {results.tags && (
-        <div>
-          <h2>Top Tags</h2>
-          <pre>{JSON.stringify(results.tags, null, 2)}</pre>
-        </div>
-      )}
-    </div>
+    <Card className="w-100 p-4 bg-primary border-secondary padding-10">
+      <Card.Header className="text-center bg-primary text-white border-secondary">
+        <h2 className="mb-0">Importuj dane o odsłuchach</h2>
+      </Card.Header>
+
+      <Card.Body className="d-flex flex-column align-items-center">
+        {/* Komunikat sukcesu */}
+        {message && (
+          <Alert variant="success" className="w-100 text-center">
+            {message}
+          </Alert>
+        )}
+
+        {/* Komunikat o błędzie */}
+        {error && (
+          <Alert variant="danger" className="w-100 text-center">
+            {error}
+          </Alert>
+        )}
+
+        {/* Przyciski importu */}
+        <Button
+          variant="primary"
+          className="mb-3 w-100"
+          onClick={() =>
+            importData(
+              "/music/top-artists",
+              "Pomyślnie zaimportowano wszystkich artystów."
+            )
+          }
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Spinner animation="border" size="sm" /> Importowanie artystów...
+            </>
+          ) : (
+            "Importuj wszystkich artystów"
+          )}
+        </Button>
+
+        <Button
+          variant="success"
+          className="mb-3 w-100"
+          onClick={() =>
+            importData(
+              "/music/top-tracks",
+              "Pomyślnie zaimportowano top utwory."
+            )
+          }
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Spinner animation="border" size="sm" /> Importowanie top utworów
+              i gatunków...
+            </>
+          ) : (
+            "Importuj top utwory i gatunki"
+          )}
+        </Button>
+
+        <Button
+          variant="warning"
+          className="mb-3 w-100"
+          onClick={() =>
+            importData(
+              "/music/recent-artists",
+              "Pomyślnie zaimportowano ostatnich artystów."
+            )
+          }
+          disabled={loading}
+        >
+          {loading ? (
+            <>
+              <Spinner animation="border" size="sm" /> Importowanie ostatnich
+              artystów...
+            </>
+          ) : (
+            "Importuj ostatnich artystów"
+          )}
+        </Button>
+      </Card.Body>
+    </Card>
   );
 };
 
-export default FetchUserData;
+export default ImportUserData;

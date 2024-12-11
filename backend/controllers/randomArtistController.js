@@ -76,8 +76,7 @@ exports.getRandomArtist = async (req, res) => {
       tag1: tags[0].name,
       tag2: tags[1].name,
       tag3: tags[2].name,
-      imageLastFM:
-        artistData.image.find((img) => img.size === "large")?.["#text"] || null,
+      imageLastFM: spotifyArtist.images[0]?.url || null,
       urlSpotify: spotifyArtist.external_urls.spotify,
     });
   } catch (error) {

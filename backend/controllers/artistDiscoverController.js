@@ -8,6 +8,7 @@ const SPOTIFY_API_URL = "https://api.spotify.com/v1/";
 const { getSpotifyAccessToken } = require("../services/spotifyAuthService"); // Funkcja do autoryzacji Spotify API
 const DiscoveredArtists = require("../models/discovered_artists");
 const ImportedArtists = require("../models/imported_artists");
+const stringSimilarity = require("string-similarity");
 
 exports.discoverArtist = async (req, res) => {
   try {
@@ -20,10 +21,11 @@ exports.discoverArtist = async (req, res) => {
         .json({ message: "Musisz podać przynajmniej jeden gatunek." });
     }
 
-    if (typeof maxPopularity !== "number" || maxPopularity <= 0) {
-      return res
-        .status(400)
-        .json({ message: "Musisz podać maksymalną popularność" });
+    if (typeof maxPopularity !== "number" || maxPopularity < 60000) {
+      return res.status(400).json({
+        message:
+          "Z uwagi na ograniczenia zapytań do Last.fm, maksymalna popularność nie może być mniejsza niż 60000",
+      });
     }
 
     let genreQueue = [...genres]; // Kolejka do przetwarzania gatunków
@@ -39,6 +41,7 @@ exports.discoverArtist = async (req, res) => {
         params: {
           method: "tag.getTopArtists",
           tag: currentGenre,
+          limit: 1000,
           api_key: process.env.LASTFM_API_KEY,
           format: "json",
         },
@@ -81,42 +84,84 @@ exports.discoverArtist = async (req, res) => {
           });
 
           const artistData = artistInfoResponse.data?.artist;
-          if (!artistData || artistData.listeners < maxPopularity) continue; // Jeśli brak danych artysty, spróbuj kolejnego
-          console.log("DISCOVERED ARTIST NAME: ", artistData.name);
-          const spotifyToken = await getSpotifyAccessToken(); // Funkcja do autoryzacji
+          if (!artistData) continue; // Pomijamy, jeśli nie ma danych o artyście
+
+          const listenersData = artistData.stats.listeners;
+          const listeners = Number(listenersData);
+          const tags = artistData.tags.tag.map((tag) => tag.name.toLowerCase()); // Konwertujemy tagi do lowercase
+          if (listeners > maxPopularity) continue;
+
+          const name = artistData.name;
+          const mbid = artistData.mbid;
+          const spotifyToken = await getSpotifyAccessToken();
           const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
             headers: { Authorization: `Bearer ${spotifyToken}` },
-            params: {
-              q: artistData.name,
-              type: "artist",
-              limit: 1,
-            },
+            params: { q: name, type: "artist", limit: 10 },
           });
 
-          const spotifyArtist = spotifyResponse.data.artists.items[0];
+          const spotifyArtists = spotifyResponse.data.artists.items;
 
-          // Zapisz do tabeli DiscoveredArtists
-          await DiscoveredArtists.create({
-            user_id: userId,
-            name: artistData.name,
-            mbid: artistData.mbid || null,
-            url: artistData.url || null,
-            description: artistData.bio?.content || null,
-            genre1: artistData.tags.tag[0].name,
-            genre2: artistData.tags.tag[1].name,
-            genre3: artistData.tags.tag[2].name,
+          let bestMatch = null;
+          let highestScore = 0;
+
+          spotifyArtists.forEach((spotifyArtist) => {
+            let score = 0;
+
+            if (spotifyArtist.name.toLowerCase() === name.toLowerCase()) {
+              score += 3; // Dopasowanie dokładnej nazwy
+            }
+
+            if (mbid && spotifyArtist.id === mbid) {
+              score += 5; // Idealne dopasowanie po MBID
+            }
+
+            const similarity = stringSimilarity.compareTwoStrings(
+              spotifyArtist.name,
+              name
+            );
+            score += similarity * 3; // Dopasowanie Levenshtein
+
+            if (score > highestScore) {
+              highestScore = score;
+              bestMatch = spotifyArtist;
+            }
           });
+          if (bestMatch) {
+            console.log("🎉 Najlepsze dopasowanie:", bestMatch.name);
+            console.log("🎉 Wspólne gatunki:", bestMatch.commonGenres);
 
-          return res.json({
-            message: "Pomyślnie znaleziono artystę.",
-            artist: {
+            console.log("DISCOVERED ARTIST NAME: ", artistData.name);
+            await DiscoveredArtists.create({
+              user_id: userId,
               name: artistData.name,
-              mbid: artistData.mbid,
-              url: artistData.url,
-              bio: artistData.bio?.content,
-              spotify_url: spotifyArtist.external_urls.spotify,
-            },
-          });
+              mbid: artistData?.mbid || null,
+              url: artistData?.url || null,
+              description: artistData.bio?.content || null,
+              genre1: artistData.tags.tag[0].name,
+              genre2: artistData.tags.tag[1].name,
+              genre3: artistData.tags.tag[2].name,
+              listeners: artistData.stats.listeners,
+              spotify_link: bestMatch.external_urls.spotify,
+            });
+
+            return res.json({
+              message: "Pomyślnie znaleziono artystę.",
+              artist: {
+                name: artistData.name,
+                mbid: artistData.mbid,
+                url: artistData.url,
+                bio: artistData.bio?.content,
+                spotify_url: bestMatch.external_urls.spotify,
+                listeners: artistData.stats.listeners,
+                imageLastFM: bestMatch.images[0]?.url || null,
+                genre1: artistData.tags.tag[0].name,
+                genre2: artistData.tags.tag[1].name,
+                genre3: artistData.tags.tag[2].name,
+              },
+            });
+          } else {
+            console.log("❌ Nie znaleziono odpowiedniego artysty na Spotify.");
+          }
         }
       }
 

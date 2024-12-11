@@ -6,14 +6,18 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json", // Domyślny nagłówek dla wszystkich żądań
   },
-  timeout: 10000, // Opcjonalny czas oczekiwania (timeout) na odpowiedź
+  timeout: 600000, // Opcjonalny czas oczekiwania (timeout) na odpowiedź
 });
 
 // Interceptor, który dodaje bazowy URL do wszystkich żądań
 api.interceptors.request.use(
   (config) => {
     // Możesz dodać dodatkowe nagłówki lub inne ustawienia tutaj, jeśli są potrzebne
-    console.log("Request made to:", config.url); // Logowanie żądań dla celów debugowania
+    console.log("Request made to:", config.url);
+    const token = localStorage.getItem("token"); // Pobieramy token z localStorage
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`; // Dodajemy token do nagłówka
+    } // Logowanie żądań dla celów debugowania
     return config;
   },
   (error) => {
@@ -26,6 +30,7 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => {
     // Tutaj możesz przechwycić odpowiedź, np. logując ją lub wykonując dodatkowe operacje
+
     return response;
   },
   (error) => {

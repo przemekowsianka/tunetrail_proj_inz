@@ -25,6 +25,7 @@
     "react-bootstrap": "^2.10.6",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.1",
+    "react-router-dom": "^7.0.2",
     "react-scripts": "5.0.1",
     "sass": "^1.82.0",
     "sequelize": "^6.37.5",

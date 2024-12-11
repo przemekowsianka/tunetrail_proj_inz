@@ -7,6 +7,8 @@ import { fetchRandomArtist } from "../services/randomMusicService";
 import SpotifyLogo from "../assets/spotify.png";
 import LastFMLogo from "../assets/lastfm.png";
 
+import translateText from "../services/translateService";
+
 const RecommendArtist = () => {
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,7 +34,7 @@ const RecommendArtist = () => {
   if (error) return <p>Błąd: {error}</p>;
   const bio = artist?.bio || "Brak biografii";
   return (
-    <Container className="d-flex justify-content-center align-items-center min-vh-100">
+    <Container className="d-flex justify-content-center align-items-center max-vh-100">
       <Card className="w-75 p-4 bg-primary border-secondary">
         <Card.Header className="text-center bg-primary text-secondary border-secondary ">
           <h2 className="mb-0">Polecamy Artystę</h2>
@@ -46,7 +48,8 @@ const RecommendArtist = () => {
                     <img
                       src={artist.imageLastFM}
                       alt={artist.name}
-                      className="img-fluid mb-3"
+                      className="img-fluid mb-3 w-50"
+                      style={{ borderRadius: "8px" }}
                     />
                   )}
                   <h3>{artist.name}</h3>
