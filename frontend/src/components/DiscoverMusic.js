@@ -89,7 +89,7 @@ const DiscoverMusic = () => {
                   <Form.Label>Liczba słuchaczy</Form.Label>
                   <Form.Control
                     type="number"
-                    placeholder="Wpisz liczbę słuchaczy"
+                    placeholder="Wpisz maksymalną liczbę słuchaczy z Last.fm"
                     value={listeners}
                     onChange={(e) => setListeners(e.target.value)}
                     required
@@ -201,7 +201,7 @@ const DiscoverMusic = () => {
                   <div
                     className="TAG mb-2"
                     style={{
-                      backgroundColor: "#8464dd",
+                      backgroundColor: "#8f74d7",
                       padding: "10px 20px",
                       borderRadius: "8px",
                       fontSize: "1.25rem",
@@ -214,7 +214,7 @@ const DiscoverMusic = () => {
                   <div
                     className="TAG mb-2"
                     style={{
-                      backgroundColor: "#8464dd",
+                      backgroundColor: "#8f74d7",
                       padding: "10px 20px",
                       borderRadius: "8px",
                       fontSize: "1.25rem",
@@ -227,7 +227,7 @@ const DiscoverMusic = () => {
                   <div
                     className="TAG mb-2"
                     style={{
-                      backgroundColor: "#8464dd",
+                      backgroundColor: "#8f74d7",
                       padding: "10px 20px",
                       borderRadius: "8px",
                       fontSize: "1.25rem",
