@@ -78,8 +78,8 @@ const RecommendTag = () => {
                     <div
                       className="TAG d-flex mb-3 w-75 justify-content-center align-items-center"
                       style={{
-                        backgroundColor: "#8464dd",
-
+                        backgroundColor: "#8f74d7",
+                        color: "white",
                         padding: "10px 20px",
                         borderRadius: "8px",
                         fontSize: "1.75rem",
@@ -91,8 +91,8 @@ const RecommendTag = () => {
                     <div
                       className="TAG mb-2 w-35 justify-content-center align-items-center"
                       style={{
-                        backgroundColor: "#8464dd",
-
+                        backgroundColor: "#8f74d7",
+                        color: "white",
                         padding: "10px 20px",
                         borderRadius: "8px",
                         fontSize: "1.25rem",

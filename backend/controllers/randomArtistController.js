@@ -25,6 +25,7 @@ exports.getRandomArtist = async (req, res) => {
     const randomIndex = Math.floor(Math.random() * artists.length);
     const randomArtist = artists[randomIndex];
     //  console.log(randomArtist);
+    console.log("RANDOM ARTIST NAME: ", randomArtist.name);
     const lastFmResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "artist.getInfo",
@@ -37,18 +38,12 @@ exports.getRandomArtist = async (req, res) => {
     const artistData = lastFmResponse.data?.artist;
     // console.log(lastFmResponse);
     //  console.log(artistData);
-    const mbid = artistData.mbid;
 
-    if (!mbid) {
-      return res
-        .status(404)
-        .json({ message: "MBID nie znaleziono dla podanego artysty." });
-    }
     console.log("Dane z API artistData.image:", artistData.image);
     const lastFmResponse2 = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
         method: "artist.getTopTags",
-        mbid: mbid,
+        artist: artistData.name,
         api_key: LAST_FM_API_KEY,
         format: "json",
       },
@@ -72,7 +67,7 @@ exports.getRandomArtist = async (req, res) => {
       name: artistData.name,
       bio: artistData.bio.content,
       urlLastFM: artistData.url,
-      mbid: mbid,
+
       tag1: tags[0].name,
       tag2: tags[1].name,
       tag3: tags[2].name,

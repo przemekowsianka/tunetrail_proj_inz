@@ -35,11 +35,7 @@ const ImportUserData = () => {
   };
 
   return (
-    <Card className="w-100 p-4 bg-primary border-secondary padding-10">
-      <Card.Header className="text-center bg-primary text-white border-secondary">
-        <h2 className="mb-0">Importuj dane o odsłuchach</h2>
-      </Card.Header>
-
+    <Card className="w-100 p-4 bg-primary padding-10">
       <Card.Body className="d-flex flex-column align-items-center">
         {/* Komunikat sukcesu */}
         {message && (
@@ -57,7 +53,7 @@ const ImportUserData = () => {
 
         {/* Przyciski importu */}
         <Button
-          variant="primary"
+          variant="secondary"
           className="mb-3 w-100"
           onClick={() =>
             importData(

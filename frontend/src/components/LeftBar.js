@@ -128,7 +128,7 @@ const LeftBar = () => {
       {/* Przycisk wylogowania */}
       <Button
         className="Select mt-auto w-100"
-        variant="danger"
+        variant="warning"
         onClick={handleLogout}
       >
         Wyloguj się

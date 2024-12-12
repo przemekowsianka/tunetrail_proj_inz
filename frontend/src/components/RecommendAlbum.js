@@ -66,8 +66,8 @@ const RecommendAlbum = () => {
                     <div
                       className="TAG mb-2"
                       style={{
-                        backgroundColor: "#8464dd",
-
+                        backgroundColor: "#8f74d7",
+                        color: "white",
                         padding: "10px 20px",
                         borderRadius: "8px",
                         fontSize: "1.25rem",
@@ -79,8 +79,8 @@ const RecommendAlbum = () => {
                     <div
                       className="TAG mb-2"
                       style={{
-                        backgroundColor: "#8464dd",
-
+                        backgroundColor: "#8f74d7",
+                        color: "white",
                         padding: "10px 20px",
                         borderRadius: "8px",
                         fontSize: "1.25rem",
@@ -92,8 +92,8 @@ const RecommendAlbum = () => {
                     <div
                       className="TAG mb-2"
                       style={{
-                        backgroundColor: "#8464dd",
-
+                        backgroundColor: "#8f74d7",
+                        color: "white",
                         padding: "10px 20px",
                         borderRadius: "8px",
                         fontSize: "1.25rem",

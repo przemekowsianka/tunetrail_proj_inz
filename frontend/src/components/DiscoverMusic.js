@@ -73,10 +73,13 @@ const DiscoverMusic = () => {
   };
 
   return (
-    <Container fluid className="py-5">
-      <Row>
-        <Col md={4}>
-          <Card>
+    <Container
+      fluid
+      className="d-flex justify-content-center align-items-center max-vh-90"
+    >
+      <Row className="w-100 align-items-stretch">
+        <Col md={4} className="d-flex">
+          <Card className="w-100 h-100">
             <Card.Header className="bg-primary text-white text-center">
               <h4>Preferencje</h4>
             </Card.Header>
@@ -160,7 +163,7 @@ const DiscoverMusic = () => {
         </Col>
 
         <Col md={8} className="d-flex justify-content-center">
-          <Card className="w-100">
+          <Card className="w-100 h-100">
             <Card.Header className="bg-primary text-white text-center">
               <h4>Wynik</h4>
             </Card.Header>
