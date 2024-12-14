@@ -143,7 +143,7 @@ const DiscoverMusic = () => {
                     {genres.map((genre, index) => (
                       <div key={index} className="m-1">
                         <Button
-                          variant="outline-danger"
+                          variant="outline-warning"
                           size="sm"
                           onClick={() => removeGenre(genre)}
                         >

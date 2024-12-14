@@ -11,13 +11,27 @@ const Home = () => {
       style={{
         height: "100vh", // Ustawienie pełnej wysokości ekranu
         overflowY: "auto", // Włączenie przewijania
-        padding: "20px", // Opcjonalny padding dla treści
+        padding: "20px",
+        background: "rgb(247,247,247)",
+        background:
+          "linear-gradient(180deg, rgba(247,247,247,1) 0%, rgba(226,221,242,1) 100%)",
       }}
     >
-      <RecommendArtist />
-      <RecommendAlbum />
-      <RecommendTrack />
-      <RecommendTag />
+      <div style={{ marginBottom: "80px" }}>
+        <RecommendArtist />
+      </div>
+
+      <div style={{ marginBottom: "80px" }}>
+        <RecommendAlbum />
+      </div>
+
+      <div style={{ marginBottom: "80px" }}>
+        <RecommendTrack />
+      </div>
+
+      <div>
+        <RecommendTag />
+      </div>
     </div>
   );
 };

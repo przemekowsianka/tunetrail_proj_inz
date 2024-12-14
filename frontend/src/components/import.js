@@ -54,7 +54,7 @@ const ImportUserData = () => {
         {/* Przyciski importu */}
         <Button
           variant="secondary"
-          className="mb-3 w-100"
+          className="mb-3 w-100 shadow"
           onClick={() =>
             importData(
               "/music/top-artists",
@@ -73,8 +73,8 @@ const ImportUserData = () => {
         </Button>
 
         <Button
-          variant="success"
-          className="mb-3 w-100"
+          variant="secondary"
+          className="mb-3 w-100 shadow"
           onClick={() =>
             importData(
               "/music/top-tracks",
@@ -94,8 +94,8 @@ const ImportUserData = () => {
         </Button>
 
         <Button
-          variant="warning"
-          className="mb-3 w-100"
+          variant="secondary"
+          className="mb-3 w-100 shadow"
           onClick={() =>
             importData(
               "/music/recent-artists",

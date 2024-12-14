@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./custom.scss";
 import {
   BrowserRouter as Router,
@@ -26,12 +26,26 @@ function AppContent() {
   const location = useLocation(); // useLocation musi być wewnątrz Routera
   const isAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
-
+  const [isLeftBarExpanded, setIsLeftBarExpanded] = useState(
+    window.innerWidth >= 768
+  );
   return (
     <div className="d-flex">
-      {!isAuthPage && <LeftBar />}{" "}
+      {!isAuthPage && (
+        <LeftBar
+          isExpanded={isLeftBarExpanded}
+          onToggle={(value) => setIsLeftBarExpanded(value)}
+        />
+      )}{" "}
       {/* Wyświetl LeftBar tylko, jeśli NIE jesteśmy na /login lub /register */}
-      <div className="content" style={{ width: isAuthPage ? "100%" : "70%" }}>
+      <div
+        className="content"
+        style={{
+          flexGrow: 1, // Flexbox: zajmij dostępne miejsce
+          marginLeft: isAuthPage ? "0" : isLeftBarExpanded ? "25%" : "0",
+          transition: "width 0.3s ease-in-out",
+        }}
+      >
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />{" "}
           {/* Domyślne przekierowanie na login */}
