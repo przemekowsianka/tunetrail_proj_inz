@@ -5,13 +5,13 @@ import api from "../http/requestInterceptor";
 import ImportUserData from "./import";
 import { AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 
-const LeftBar = () => {
+const LeftBar = ({ isExpanded: initialExpanded, onToggle }) => {
   const [username, setUsername] = useState(
     localStorage.getItem("lastFmUser") || ""
   );
   const [isAccountSaved, setIsAccountSaved] = useState(false);
   const [activePage, setActivePage] = useState("home");
-  const [isExpanded, setIsExpanded] = useState(window.innerWidth >= 768);
+  const [isExpanded, setIsExpanded] = useState(initialExpanded);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
@@ -56,16 +56,16 @@ const LeftBar = () => {
     if (window.innerWidth < 1024) setIsExpanded(false);
   };
 
-  const toggleLeftBar = () => setIsExpanded(!isExpanded);
+  const toggleLeftBar = () => setIsExpanded((prev) => !prev);
 
   return (
     <>
       {/* Przycisk do rozwijania LeftBar (tylko na małych ekranach) */}
       <Button
         onClick={toggleLeftBar}
-        className="menu-toggle-btn d-md-none"
+        className="menu-toggle-btn d-big-none"
         style={{
-          position: "fixed",
+          position: "absolute",
           top: "10px",
           left: "10px",
           zIndex: 1000,
@@ -96,6 +96,7 @@ const LeftBar = () => {
           minHeight: "100vh",
           backgroundColor: "var(--bs-primary)",
           color: "#000",
+
           position: "fixed",
           left: isExpanded ? 0 : "-100%",
           top: 0,
@@ -106,57 +107,63 @@ const LeftBar = () => {
         }}
       >
         <h1 className="Title text-center text-white mb-4">TuneTrail</h1>
-
-        <Button
-          className="Select w-100 mb-2"
-          variant={activePage === "home" ? "secondary" : "primary"}
-          onClick={() => handleNavigation("home")}
+        <div
+          style={{
+            height: "100%",
+            overflowY: "auto",
+          }}
         >
-          Strona Główna
-        </Button>
+          <Button
+            className="Select w-100 mb-2"
+            variant={activePage === "home" ? "secondary" : "primary"}
+            onClick={() => handleNavigation("home")}
+          >
+            Strona Główna
+          </Button>
 
-        <Button
-          className="Select w-100 mb-2"
-          variant={activePage === "explore" ? "secondary" : "primary"}
-          onClick={() => handleNavigation("explore")}
-        >
-          Odkrywaj
-        </Button>
+          <Button
+            className="Select w-100 mb-2"
+            variant={activePage === "explore" ? "secondary" : "primary"}
+            onClick={() => handleNavigation("explore")}
+          >
+            Odkrywaj
+          </Button>
 
-        <Button
-          className="Select w-100 mb-2"
-          variant={activePage === "discovered" ? "secondary" : "primary"}
-          onClick={() => handleNavigation("discovered")}
-        >
-          Odkryto
-        </Button>
+          <Button
+            className="Select w-100 mb-2"
+            variant={activePage === "discovered" ? "secondary" : "primary"}
+            onClick={() => handleNavigation("discovered")}
+          >
+            Odkryto
+          </Button>
 
-        {!isAccountSaved && (
-          <Form onSubmit={handleLastFmSubmit} className="mt-4">
-            <Form.Group controlId="formLastFmUsername" className="mb-3">
-              <Form.Label className="text-white">Last.fm Username</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder="Wpisz nazwę użytkownika"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </Form.Group>
-            <Button type="submit" variant="secondary" className="w-100">
-              Zapisz konto Last.fm
-            </Button>
-          </Form>
-        )}
+          {!isAccountSaved && (
+            <Form onSubmit={handleLastFmSubmit} className="mt-4">
+              <Form.Group controlId="formLastFmUsername" className="mb-3">
+                <Form.Label className="text-white">Last.fm Username</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Wpisz nazwę użytkownika"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </Form.Group>
+              <Button type="submit" variant="secondary" className="w-100">
+                Zapisz konto Last.fm
+              </Button>
+            </Form>
+          )}
 
-        <ImportUserData />
+          <ImportUserData />
 
-        <Button
-          className="Select mt-auto w-100"
-          variant="warning"
-          onClick={handleLogout}
-        >
-          Wyloguj się
-        </Button>
+          <Button
+            className="Select mt-auto w-100"
+            variant="warning"
+            onClick={handleLogout}
+          >
+            Wyloguj się
+          </Button>
+        </div>
       </div>
     </>
   );

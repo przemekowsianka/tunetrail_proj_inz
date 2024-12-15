@@ -29,7 +29,7 @@ exports.login = async (req, res) => {
     }
     // console.log("user id: ", user.id);
     const token = jwt.sign({ id: user.id }, process.env.TOKEN, {
-      expiresIn: "1h",
+      expiresIn: "24h",
     });
     res.json({ token });
     //  console.log("token: ", token);

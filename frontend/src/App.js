@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./custom.scss";
 import {
   BrowserRouter as Router,
@@ -23,12 +23,23 @@ function App() {
 }
 
 function AppContent() {
-  const location = useLocation(); // useLocation musi być wewnątrz Routera
+  const location = useLocation();
   const isAuthPage =
     location.pathname === "/login" || location.pathname === "/register";
   const [isLeftBarExpanded, setIsLeftBarExpanded] = useState(
-    window.innerWidth >= 768
+    window.innerWidth >= 1024
   );
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  // Obsługa zmiany rozmiaru okna
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div className="d-flex">
       {!isAuthPage && (
@@ -36,19 +47,21 @@ function AppContent() {
           isExpanded={isLeftBarExpanded}
           onToggle={(value) => setIsLeftBarExpanded(value)}
         />
-      )}{" "}
-      {/* Wyświetl LeftBar tylko, jeśli NIE jesteśmy na /login lub /register */}
+      )}
       <div
         className="content"
         style={{
-          flexGrow: 1, // Flexbox: zajmij dostępne miejsce
-          marginLeft: isAuthPage ? "0" : isLeftBarExpanded ? "25%" : "0",
-          transition: "width 0.3s ease-in-out",
+          flexGrow: 1,
+          marginLeft: isAuthPage
+            ? "0"
+            : isLeftBarExpanded && windowWidth >= 1024
+            ? "25%"
+            : "0",
+          transition: "margin-left 0.3s ease-in-out", // Zmieniono na "margin-left"
         }}
       >
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />{" "}
-          {/* Domyślne przekierowanie na login */}
+          <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />

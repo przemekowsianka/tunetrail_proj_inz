@@ -8,5 +8,10 @@ $success: #a1f45d;
 $font-family-base: "MuseoModerno", sans-serif; // Zmieniony font podstawowy
 $form-control-bg: #f7f7f7; // Zmieniony kolor tła dla pól formularzy
 
+@media (min-width: 1024px) {
+  .d-big-none {
+    display: none !important;
+  }
+}
 // Importuj główny plik SCSS Bootstrap
 @import "bootstrap/scss/bootstrap";
