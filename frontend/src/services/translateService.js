@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const translateText = async (text, targetLanguage = "pl") => {
+const translateText = async (text) => {
   const url = "https://libretranslate.de/translate";
 
   try {
@@ -16,3 +16,4 @@ const translateText = async (text, targetLanguage = "pl") => {
     return text; // W razie błędu zwracamy oryginalny tekst
   }
 };
+export default translateText;

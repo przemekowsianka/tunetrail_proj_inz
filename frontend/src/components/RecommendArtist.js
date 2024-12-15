@@ -3,6 +3,7 @@ import { Card, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 import parse from "html-react-parser";
 
 import { fetchRandomArtist } from "../services/randomMusicService";
+import translateText from "../services/translateService";
 
 import SpotifyLogo from "../assets/spotify.png";
 import LastFMLogo from "../assets/lastfm.png";
@@ -11,6 +12,8 @@ const RecommendArtist = () => {
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [translatedBio, setTranslatedBio] = useState("");
+  const [translating, setTranslating] = useState(false);
 
   const loadRandomArtist = async () => {
     try {
@@ -23,12 +26,34 @@ const RecommendArtist = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     loadRandomArtist();
   }, []);
+  useEffect(() => {
+    if (artist?.bio) {
+      translateBio(artist.bio);
+    }
+  }, [artist]);
 
   const bio = artist?.bio || "Brak biografii";
+  const translateBio = async (bio) => {
+    if (!bio) {
+      setTranslatedBio("Brak biografii");
+      return;
+    }
+    setTranslating(true);
+    try {
+      const translatedText = await translateText(bio);
+      console.log("TŁUMACZENIE: ", translatedText);
+      setTranslatedBio(translatedText);
+      if (translatedText == "") setTranslatedBio(bio);
+    } catch (error) {
+      console.error("Błąd tłumaczenia bio:", error);
+      setTranslatedBio(bio); // Fallback do oryginalnego bio
+    } finally {
+      setTranslating(false);
+    }
+  };
 
   return (
     <Container
@@ -115,7 +140,11 @@ const RecommendArtist = () => {
                       backgroundColor: "#f9f9f9",
                     }}
                   >
-                    <p style={{ margin: 0 }}>{parse(bio)}</p>
+                    {translating ? (
+                      <p>Trwa tłumaczenie biografii...</p>
+                    ) : (
+                      <p style={{ margin: 0 }}>{parse(translatedBio)}</p>
+                    )}
                   </div>
                   <div
                     className="TAG mb-2 shadow max-vh-5"
