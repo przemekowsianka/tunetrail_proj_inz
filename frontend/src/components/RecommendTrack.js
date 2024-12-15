@@ -37,15 +37,12 @@ const RecommendTrack = () => {
       className="d-flex justify-content-center align-items-center max-vh-90"
     >
       <Row className="w-100 align-items-stretch">
-        <Col xs={12} className="mb-4">
-          <div className="text-center">
-            <h1 className="display-4 text-primary">Polecamy Utwór</h1>
-          </div>
-        </Col>
-
         {/* Lewa kolumna */}
         <Col md={6} className="d-flex justify-content-center">
-          <Card className="w-100 h-100">
+          <Card className="w-100 h-100 shadow">
+            <Card.Header className="bg-primary text-white text-center">
+              <h4>Polecamy Utwór</h4>
+            </Card.Header>
             {loading ? (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center">
                 <Spinner
@@ -58,9 +55,6 @@ const RecommendTrack = () => {
             ) : error ? (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center">
                 <p className="text-danger mb-3">Błąd: {error}</p>
-                <Button variant="secondary" onClick={loadRandomTrack}>
-                  Spróbuj ponownie
-                </Button>
               </Card.Body>
             ) : (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center ">
@@ -68,27 +62,36 @@ const RecommendTrack = () => {
                   <img
                     src={track.img}
                     alt={track.name}
-                    className="img-fluid mb-3 w-50"
+                    className="img-fluid mb-3 w-50 shadow"
                     style={{ borderRadius: "8px" }}
                   />
                 )}
                 <h3>{track.name?.name || track.name}</h3>
                 <p>{track.artist?.name || track.artist}</p>
-                <Button
-                  variant="secondary"
-                  onClick={loadRandomTrack}
-                  className="mt-3"
-                >
-                  Wylosuj ponownie
-                </Button>
               </Card.Body>
             )}
+            <Card.Footer
+              className="bg-primary d-flex justify-content-center align-items-center"
+              style={{ minHeight: "60px" }}
+            >
+              <Button
+                variant="secondary"
+                onClick={loadRandomTrack}
+                className="btn-sm text-white shadow"
+                style={{ fontSize: "0.9rem" }}
+              >
+                Wylosuj ponownie
+              </Button>
+            </Card.Footer>
           </Card>
         </Col>
 
         {/* Prawa kolumna */}
         <Col md={6} className="d-flex justify-content-center">
-          <Card className="w-100 h-100">
+          <Card className="w-100 h-100 shadow">
+            <Card.Header className="bg-primary text-white text-center">
+              <h4>Gatunki</h4>
+            </Card.Header>
             {loading ? (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center">
                 <Spinner
@@ -101,15 +104,12 @@ const RecommendTrack = () => {
             ) : error ? (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center">
                 <p className="text-danger mb-3">Błąd: {error}</p>
-                <Button variant="secondary" onClick={loadRandomTrack}>
-                  Spróbuj ponownie
-                </Button>
               </Card.Body>
             ) : (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center h-100">
                 <div className="d-flex flex-column align-items-center mb-3 w-100">
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
                       backgroundColor: "#8f74d7",
                       color: "white",
@@ -125,7 +125,7 @@ const RecommendTrack = () => {
                   </div>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
                       backgroundColor: "#8f74d7",
                       color: "white",
@@ -141,7 +141,7 @@ const RecommendTrack = () => {
                   </div>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
                       backgroundColor: "#8f74d7",
                       color: "white",
@@ -156,37 +156,50 @@ const RecommendTrack = () => {
                     {track.tag3?.name || track.tag3}
                   </div>
                 </div>
-
-                <div className="d-flex mt-3 justify-content-center w-100">
-                  <a
-                    href={track.urlLastFM}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <img
-                      className="ServiceLogo"
-                      src={LastFMLogo}
-                      alt="Last.fm"
-                      style={{ width: "50px" }}
-                    />
-                  </a>
-
-                  {track.urlSpotify && (
-                    <a
-                      href={track.urlSpotify}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <img
-                        src={SpotifyLogo}
-                        alt="Spotify"
-                        style={{ width: "50px" }}
-                      />
-                    </a>
-                  )}
-                </div>
               </Card.Body>
             )}
+            <Card.Footer
+              className="bg-primary text-white d-flex justify-content-center align-items-center"
+              style={{ minHeight: "60px" }}
+            >
+              <Button
+                variant="secondary"
+                href={track?.urlLastFM}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-sm text-white d-flex align-items-center shadow"
+                style={{ fontSize: "0.9rem" }}
+              >
+                <img
+                  src={LastFMLogo}
+                  alt="Last.fm"
+                  style={{ width: "20px", height: "20px", marginRight: "10px" }}
+                />
+                Last.FM
+              </Button>
+
+              {track?.urlSpotify && (
+                <Button
+                  variant="secondary"
+                  href={track?.urlSpotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-sm text-white d-flex align-items-center ms-2 shadow"
+                  style={{ fontSize: "0.9rem" }}
+                >
+                  <img
+                    src={SpotifyLogo}
+                    alt="Spotify"
+                    style={{
+                      width: "20px",
+                      height: "20px",
+                      marginRight: "10px",
+                    }}
+                  />
+                  Spotify
+                </Button>
+              )}
+            </Card.Footer>
           </Card>
         </Col>
       </Row>

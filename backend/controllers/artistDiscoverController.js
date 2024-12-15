@@ -21,22 +21,21 @@ exports.discoverArtist = async (req, res) => {
         .json({ message: "Musisz podać przynajmniej jeden gatunek." });
     }
 
-    if (typeof maxPopularity !== "number" || maxPopularity < 60000) {
+    if (typeof maxPopularity !== "number" || maxPopularity < 1000) {
       return res.status(400).json({
-        message:
-          "Z uwagi na ograniczenia zapytań do Last.fm, maksymalna popularność nie może być mniejsza niż 60000",
+        message: "Maksymalna ilość słuchaczy musi być większa niż 1000",
       });
     }
 
-    let genreQueue = [...genres]; // Kolejka do przetwarzania gatunków
-    let processedGenres = new Set(); // Zestaw przetworzonych gatunków
+    let genreQueue = [...genres];
+    let processedGenres = new Set();
     let attempts = 0;
 
     while (genreQueue.length > 0 && attempts < 20) {
-      const currentGenre = genreQueue.shift(); // Pobierz pierwszy gatunek z kolejki
+      const currentGenre = genreQueue.shift();
       processedGenres.add(currentGenre);
+      attempts++;
 
-      // Pobierz artystów dla bieżącego gatunku
       const response = await axios.get(`${LAST_FM_BASE_URL}`, {
         params: {
           method: "tag.getTopArtists",
@@ -47,12 +46,10 @@ exports.discoverArtist = async (req, res) => {
         },
       });
 
-      const artists = response.data.topartists.artist || [];
-      if (!artists || artists.length === 0) continue; // Jeśli brak artystów, przejdź do następnego gatunku
+      const artists = response.data?.topartists?.artist || [];
+      if (!artists || artists.length === 0) continue;
 
-      // Wybierz losowego artystę, który nie istnieje w tabeli ImportedArtists
       for (const candidateArtist of artists) {
-        console.log("CANDIDATE NAME: ", candidateArtist.name);
         const isAlreadyImported = await ImportedArtists.findOne({
           where: {
             user_id: userId,
@@ -62,6 +59,7 @@ exports.discoverArtist = async (req, res) => {
             ],
           },
         });
+
         const isAlreadyDiscovered = await DiscoveredArtists.findOne({
           where: {
             user_id: userId,
@@ -73,7 +71,6 @@ exports.discoverArtist = async (req, res) => {
         });
 
         if (!isAlreadyImported && !isAlreadyDiscovered) {
-          // Znaleziono nowego artystę
           const artistInfoResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
             params: {
               method: "artist.getInfo",
@@ -84,64 +81,55 @@ exports.discoverArtist = async (req, res) => {
           });
 
           const artistData = artistInfoResponse.data?.artist;
-          if (!artistData) continue; // Pomijamy, jeśli nie ma danych o artyście
+          if (!artistData) continue;
 
-          const listenersData = artistData.stats.listeners;
+          const listenersData = artistData.stats?.listeners;
           const listeners = Number(listenersData);
-          const tags = artistData.tags.tag.map((tag) => tag.name.toLowerCase()); // Konwertujemy tagi do lowercase
           if (listeners > maxPopularity) continue;
 
-          const name = artistData.name;
-          const mbid = artistData.mbid;
           const spotifyToken = await getSpotifyAccessToken();
           const spotifyResponse = await axios.get(`${SPOTIFY_API_URL}search`, {
             headers: { Authorization: `Bearer ${spotifyToken}` },
-            params: { q: name, type: "artist", limit: 10 },
+            params: { q: artistData.name, type: "artist", limit: 10 },
           });
 
-          const spotifyArtists = spotifyResponse.data.artists.items;
+          const spotifyArtists = spotifyResponse.data?.artists?.items || [];
 
           let bestMatch = null;
           let highestScore = 0;
 
           spotifyArtists.forEach((spotifyArtist) => {
             let score = 0;
-
-            if (spotifyArtist.name.toLowerCase() === name.toLowerCase()) {
-              score += 3; // Dopasowanie dokładnej nazwy
-            }
-
-            if (mbid && spotifyArtist.id === mbid) {
-              score += 5; // Idealne dopasowanie po MBID
+            if (
+              spotifyArtist.name.toLowerCase() === artistData.name.toLowerCase()
+            ) {
+              score += 3;
             }
 
             const similarity = stringSimilarity.compareTwoStrings(
               spotifyArtist.name,
-              name
+              artistData.name
             );
-            score += similarity * 3; // Dopasowanie Levenshtein
+            score += similarity * 3;
 
             if (score > highestScore) {
               highestScore = score;
               bestMatch = spotifyArtist;
             }
           });
-          if (bestMatch) {
-            console.log("🎉 Najlepsze dopasowanie:", bestMatch.name);
-            console.log("🎉 Wspólne gatunki:", bestMatch.commonGenres);
 
-            console.log("DISCOVERED ARTIST NAME: ", artistData.name);
+          if (bestMatch) {
             await DiscoveredArtists.create({
               user_id: userId,
               name: artistData.name,
-              mbid: artistData?.mbid || null,
-              url: artistData?.url || null,
+              mbid: artistData.mbid || null,
+              url: artistData.url || null,
               description: artistData.bio?.content || null,
-              genre1: artistData.tags.tag[0].name,
-              genre2: artistData.tags.tag[1].name,
-              genre3: artistData.tags.tag[2].name,
-              listeners: artistData.stats.listeners,
-              spotify_link: bestMatch.external_urls.spotify,
+              genre1: artistData.tags?.tag[0]?.name || null,
+              genre2: artistData.tags?.tag[1]?.name || null,
+              genre3: artistData.tags?.tag[2]?.name || null,
+              listeners: artistData.stats?.listeners,
+              spotify_link: bestMatch.external_urls?.spotify || null,
             });
 
             return res.json({
@@ -154,53 +142,23 @@ exports.discoverArtist = async (req, res) => {
                 spotify_url: bestMatch.external_urls.spotify,
                 listeners: artistData.stats.listeners,
                 imageLastFM: bestMatch.images[0]?.url || null,
-                genre1: artistData.tags.tag[0].name,
-                genre2: artistData.tags.tag[1].name,
-                genre3: artistData.tags.tag[2].name,
+                genre1: artistData.tags.tag[0]?.name || null,
+                genre2: artistData.tags.tag[1]?.name || null,
+                genre3: artistData.tags.tag[2]?.name || null,
               },
             });
-          } else {
-            console.log("❌ Nie znaleziono odpowiedniego artysty na Spotify.");
           }
         }
       }
-
-      // Jeśli nie znaleziono nowego artysty, spróbuj kolejnego gatunku
-      attempts++;
     }
 
-    // Jeśli wyczerpano wszystkie gatunki, znajdź podobne
-    if (genreQueue.length === 0 && attempts >= 20) {
-      const similarGenres = new Set();
-
-      for (const genre of processedGenres) {
-        const similarResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
-          params: {
-            method: "tag.getSimilar",
-            tag: genre,
-            api_key: process.env.LASTFM_API_KEY,
-            format: "json",
-          },
-        });
-
-        const similarTags = similarResponse.data.similartags.tag || [];
-        for (const tag of similarTags) {
-          if (tag.name && !processedGenres.has(tag.name)) {
-            similarGenres.add(tag.name);
-          }
-        }
-      }
-
-      if (similarGenres.size > 0) {
-        genreQueue = [...similarGenres]; // Zastąp kolejkę podobnymi gatunkami
-      } else {
-        return res.status(404).json({
-          message: "Nie znaleziono nowego artysty spełniającego kryteria.",
-        });
-      }
+    if (attempts >= 20 || genreQueue.length === 0) {
+      return res.status(404).json({
+        message: "Nie znaleziono nowego artysty spełniającego kryteria.",
+      });
     }
   } catch (error) {
-    console.error("Błąd w funkcji discoverArtist:", error.message);
+    console.error("Błąd w funkcji discoverArtist:", error);
     res.status(500).json({ message: "Wystąpił problem z serwerem." });
   }
 };
