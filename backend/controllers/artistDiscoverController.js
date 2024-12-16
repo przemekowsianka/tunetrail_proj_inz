@@ -50,6 +50,7 @@ exports.discoverArtist = async (req, res) => {
       if (!artists || artists.length === 0) continue;
 
       for (const candidateArtist of artists) {
+        console.log("CANDIDATE NAME: ", candidateArtist.name);
         const isAlreadyImported = await ImportedArtists.findOne({
           where: {
             user_id: userId,
@@ -71,16 +72,30 @@ exports.discoverArtist = async (req, res) => {
         });
 
         if (!isAlreadyImported && !isAlreadyDiscovered) {
-          const artistInfoResponse = await axios.get(`${LAST_FM_BASE_URL}`, {
-            params: {
-              method: "artist.getInfo",
-              artist: candidateArtist.name,
-              api_key: process.env.LASTFM_API_KEY,
-              format: "json",
-            },
-          });
+          const [artistInfoResponsePL, artistInfoResponseEN] =
+            await Promise.all([
+              axios.get(`${LAST_FM_BASE_URL}`, {
+                params: {
+                  method: "artist.getInfo",
+                  artist: candidateArtist.name,
+                  lang: "pl",
+                  api_key: process.env.LASTFM_API_KEY,
+                  format: "json",
+                },
+              }),
+              axios.get(`${LAST_FM_BASE_URL}`, {
+                params: {
+                  method: "artist.getInfo",
+                  artist: candidateArtist.name,
+                  lang: "en",
+                  api_key: process.env.LASTFM_API_KEY,
+                  format: "json",
+                },
+              }),
+            ]);
 
-          const artistData = artistInfoResponse.data?.artist;
+          const artistData = artistInfoResponsePL.data?.artist;
+          const bioEN = artistInfoResponseEN.data?.artist.bio.content;
           if (!artistData) continue;
 
           const listenersData = artistData.stats?.listeners;
@@ -124,7 +139,7 @@ exports.discoverArtist = async (req, res) => {
               name: artistData.name,
               mbid: artistData.mbid || null,
               url: artistData.url || null,
-              description: artistData.bio?.content || null,
+              description: artistData.bio?.content || bioEN || null,
               genre1: artistData.tags?.tag[0]?.name || null,
               genre2: artistData.tags?.tag[1]?.name || null,
               genre3: artistData.tags?.tag[2]?.name || null,
@@ -138,7 +153,7 @@ exports.discoverArtist = async (req, res) => {
                 name: artistData.name,
                 mbid: artistData.mbid,
                 url: artistData.url,
-                bio: artistData.bio?.content,
+                bio: artistData.bio?.content || bioEN,
                 spotify_url: bestMatch.external_urls.spotify,
                 listeners: artistData.stats.listeners,
                 imageLastFM: bestMatch.images[0]?.url || null,

@@ -92,6 +92,12 @@ const DiscoverMusic = () => {
                     placeholder="Wpisz maksymalną liczbę słuchaczy z Last.fm"
                     value={listeners}
                     onChange={(e) => setListeners(e.target.value)}
+                    onBlur={(e) =>
+                      setListeners(
+                        Math.max(1000, Number(e.target.value) || 1000)
+                      )
+                    }
+                    min="1000" // Minimalna wartość to 1000
                     required
                   />
                 </Form.Group>
@@ -115,13 +121,17 @@ const DiscoverMusic = () => {
 
                   <div
                     style={{
-                      maxHeight: "150px", // Maksymalna wysokość kontenera
-                      overflowY: "auto", // Przewijanie pionowe
-                      width: "100%", // Szerokość 100% względem rodzica
-                      padding: "10px", // Dodatkowy padding
-                      border: "1px solid #ccc", // Opcjonalna ramka
-                      borderRadius: "8px", // Opcjonalne zaokrąglenie
-                      backgroundColor: "#f9f9f9", // Opcjonalny kolor tła
+                      maxHeight: "150px",
+                      overflowY: "auto",
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
+                      display: "flex", // Flexbox
+                      flexWrap: "wrap", // Przełamanie do nowej linii
+                      justifyContent: "center", // Justowanie do lewej i prawej
+                      gap: "10px", // Odstępy między przyciskami
                     }}
                   >
                     {suggestedGenres.map((genre, index) => (
@@ -175,23 +185,43 @@ const DiscoverMusic = () => {
                   <h5>Artysta: {responseData.artist?.name}</h5>
                   <div
                     style={{
-                      maxHeight: "150px", // Maksymalna wysokość kontenera
-                      overflowY: "auto", // Przewijanie pionowe
-                      width: "100%", // Szerokość 100% względem rodzica
-                      padding: "10px", // Dodatkowy padding
-                      border: "1px solid #ccc", // Opcjonalna ramka
-                      borderRadius: "8px", // Opcjonalne zaokrąglenie
-                      backgroundColor: "#f9f9f9", // Opcjonalny kolor tła
+                      maxHeight: "150px",
+                      overflowY: "auto",
+                      width: "100%",
+                      padding: "10px",
+                      border: "1px solid #ccc",
+                      borderRadius: "8px",
+                      backgroundColor: "#f9f9f9",
                     }}
                   >
-                    <p>{parse(responseData.artist?.bio)}</p>
+                    <p>
+                      {parse(
+                        responseData.artist?.bio ||
+                          `Brak opisu artysty ${responseData.artist?.name} `
+                      )}
+                    </p>
                   </div>
                   {responseData.artist?.imageLastFM && (
-                    <img
-                      src={responseData.artist?.imageLastFM}
-                      alt={responseData.artist?.name}
-                      className="img-fluid my-3 w-25"
-                    />
+                    <div
+                      className="d-flex justify-content-center align-items-center"
+                      style={{
+                        width: "150px",
+                        height: "150px",
+                        overflow: "hidden",
+                        borderRadius: "8px",
+                        marginTop: "20px",
+                      }}
+                    >
+                      <img
+                        src={responseData.artist?.imageLastFM}
+                        alt={responseData.artist?.name}
+                        className="w-100 h-100"
+                        style={{
+                          objectFit: "cover",
+                          objectPosition: "center",
+                        }}
+                      />
+                    </div>
                   )}
                   <p>
                     <strong>Liczba słuchaczy:</strong>
@@ -199,69 +229,94 @@ const DiscoverMusic = () => {
                   </p>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
-                      padding: "10px 20px",
+                      backgroundColor: "#845df4",
+                      color: "white",
+                      padding: "15px 30px",
                       borderRadius: "8px",
-                      fontSize: "1.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "bold",
+                      textAlign: "center",
+                      width: "80%",
                     }}
                   >
                     {responseData.artist.genre1}
                   </div>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
-                      padding: "10px 20px",
+                      backgroundColor: "#845df4",
+                      color: "white",
+                      padding: "15px 30px",
                       borderRadius: "8px",
-                      fontSize: "1.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "bold",
+                      textAlign: "center",
+                      width: "80%",
                     }}
                   >
                     {responseData.artist.genre2}
                   </div>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
-                      padding: "10px 20px",
+                      backgroundColor: "#845df4",
+                      color: "white",
+                      padding: "15px 30px",
                       borderRadius: "8px",
-                      fontSize: "1.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "bold",
+                      textAlign: "center",
+                      width: "80%",
                     }}
                   >
                     {responseData.artist.genre3}
                   </div>
 
                   <div className="d-flex mt-3 justify-content-center w-100">
-                    <a
+                    <Button
+                      variant="secondary"
                       href={responseData.artist.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="btn-sm text-white d-flex align-items-center shadow"
+                      style={{ fontSize: "0.9rem" }}
                     >
                       <img
-                        className="ServiceLogo"
                         src={LastFMLogo}
                         alt="Last.fm"
-                        style={{ width: "50px" }}
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          marginRight: "10px",
+                        }}
                       />
-                    </a>
+                      Last.FM
+                    </Button>
+
                     {responseData.artist.spotify_url && (
-                      <a
+                      <Button
+                        variant="secondary"
                         href={responseData.artist.spotify_url}
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="btn-sm text-white d-flex align-items-center ms-2 shadow"
+                        style={{ fontSize: "0.9rem" }}
                       >
                         <img
                           src={SpotifyLogo}
                           alt="Spotify"
-                          style={{ width: "50px" }}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            marginRight: "10px",
+                          }}
                         />
-                      </a>
+                        Spotify
+                      </Button>
                     )}
                   </div>
                 </>

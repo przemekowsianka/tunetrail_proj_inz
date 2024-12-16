@@ -26,6 +26,7 @@ exports.getRandomTag = async (req, res) => {
       params: {
         method: "tag.getinfo",
         tag: randomTag.name,
+        lang: "pl",
         api_key: LAST_FM_API_KEY,
         format: "json",
       },
@@ -35,7 +36,7 @@ exports.getRandomTag = async (req, res) => {
     console.log("Random Tag Data:", tagData);
     const lastFmResponse2 = await axios.get(`${LAST_FM_BASE_URL}`, {
       params: {
-        method: "tag.getTopTracks",
+        method: "tag.getTopAlbums",
         tag: randomTag.name,
         api_key: LAST_FM_API_KEY,
         limit: 1,
@@ -43,7 +44,7 @@ exports.getRandomTag = async (req, res) => {
       },
     });
     //console.log("Top Track:", lastFmResponse2);
-    const topTracks = lastFmResponse2.data.tracks.track;
+    const topTracks = lastFmResponse2.data.albums?.album;
 
     const topTrack = Array.isArray(topTracks) ? topTracks[0] : topTracks; // Obsługa przypadku, gdy `track` jest tablicą lub obiektem
     //  console.log("Top Track:", topTracks);
@@ -52,12 +53,12 @@ exports.getRandomTag = async (req, res) => {
     res.json({
       Genre: {
         name: tagData.name,
-        wiki: tagData.wiki.summary,
+        wiki: tagData.wiki.content,
         url: randomTag.url,
       },
       TopTrack: {
-        name: topTrack.name,
-        artist: topTrack.artist,
+        name: topTrack?.name,
+        artist: topTrack?.artist,
       },
     });
   } catch (error) {

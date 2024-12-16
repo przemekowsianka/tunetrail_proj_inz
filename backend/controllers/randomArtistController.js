@@ -30,6 +30,7 @@ exports.getRandomArtist = async (req, res) => {
       params: {
         method: "artist.getInfo",
         artist: randomArtist.name,
+        lang: "pl",
         api_key: LAST_FM_API_KEY,
         format: "json",
       },

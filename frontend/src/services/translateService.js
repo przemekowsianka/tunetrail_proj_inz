@@ -1,10 +1,11 @@
 import axios from "axios";
 
 const translateText = async (text) => {
+  const proxyUrl = "https://cors-anywhere.herokuapp.com/";
   const url = "https://libretranslate.de/translate";
 
   try {
-    const response = await axios.post(url, {
+    const response = await axios.post(proxyUrl + url, {
       q: text,
       source: "en",
       target: "pl",

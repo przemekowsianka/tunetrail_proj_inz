@@ -149,7 +149,7 @@ const RecommendArtist = () => {
                   <div
                     className="TAG mb-2 shadow max-vh-5"
                     style={{
-                      backgroundColor: "#8f74d7",
+                      backgroundColor: "#845df4",
                       color: "white",
                       padding: "15px 30px",
                       borderRadius: "8px",
@@ -165,7 +165,7 @@ const RecommendArtist = () => {
                   <div
                     className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
+                      backgroundColor: "#845df4",
                       color: "white",
                       padding: "15px 30px",
                       borderRadius: "8px",
@@ -180,7 +180,7 @@ const RecommendArtist = () => {
                   <div
                     className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
+                      backgroundColor: "#845df4",
                       color: "white",
                       padding: "15px 30px",
                       borderRadius: "8px",

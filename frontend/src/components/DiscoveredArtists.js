@@ -88,7 +88,7 @@ const DiscoveredArtists = () => {
       fluid
       className="d-flex justify-content-center align-items-center max-vh-90"
     >
-      <Row className="align-items-stretch">
+      <Row className="w-100 align-items-stretch">
         <Col md={4}>
           <Card className="h-100">
             <Card.Header className="bg-primary text-white text-center">
@@ -211,39 +211,48 @@ const DiscoveredArtists = () => {
                   </p>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8464dd",
-                      padding: "10px 20px",
+                      backgroundColor: "#845df4",
+                      color: "white",
+                      padding: "15px 30px",
                       borderRadius: "8px",
-                      fontSize: "1.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "bold",
+                      textAlign: "center",
+                      width: "80%",
                     }}
                   >
                     {selectedArtist.genre1}
                   </div>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8464dd",
-                      padding: "10px 20px",
+                      backgroundColor: "#845df4",
+                      color: "white",
+                      padding: "15px 30px",
                       borderRadius: "8px",
-                      fontSize: "1.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "bold",
+                      textAlign: "center",
+                      width: "80%",
                     }}
                   >
                     {selectedArtist.genre2}
                   </div>
 
                   <div
-                    className="TAG mb-2"
+                    className="TAG mb-2 shadow"
                     style={{
-                      backgroundColor: "#8464dd",
-                      padding: "10px 20px",
+                      backgroundColor: "#845df4",
+                      color: "white",
+                      padding: "15px 30px",
                       borderRadius: "8px",
-                      fontSize: "1.25rem",
+                      fontSize: "1.5rem",
                       fontWeight: "bold",
+                      textAlign: "center",
+                      width: "80%",
                     }}
                   >
                     {selectedArtist.genre3}
@@ -251,17 +260,25 @@ const DiscoveredArtists = () => {
 
                   <div className="d-flex mt-3 justify-content-center w-100">
                     {selectedArtist.spotify_link && (
-                      <a
+                      <Button
+                        variant="secondary"
                         href={selectedArtist.spotify_link}
                         target="_blank"
                         rel="noopener noreferrer"
+                        className="btn-sm text-white d-flex align-items-center ms-2 shadow"
+                        style={{ fontSize: "0.9rem" }}
                       >
                         <img
                           src={SpotifyLogo}
                           alt="Spotify"
-                          style={{ width: "50px" }}
+                          style={{
+                            width: "20px",
+                            height: "20px",
+                            marginRight: "10px",
+                          }}
                         />
-                      </a>
+                        Spotify
+                      </Button>
                     )}
                   </div>
                 </>

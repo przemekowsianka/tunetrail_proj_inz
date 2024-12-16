@@ -13,7 +13,9 @@ const RecommendTag = () => {
   const loadRandomTag = async () => {
     try {
       setLoading(true);
+      setError(null);
       const data = await fetchRandomTag();
+      console.log("Tag object:", data);
       setTag(data);
     } catch (err) {
       setError(err.message);
@@ -92,7 +94,7 @@ const RecommendTag = () => {
         <Col md={6} className="d-flex justify-content-center">
           <Card className="w-100 h-100 shadow">
             <Card.Header className="bg-primary text-white text-center">
-              <h4>Top Utwór</h4>
+              <h4>Top Album</h4>
             </Card.Header>
             {loading ? (
               <Card.Body className="d-flex flex-column justify-content-center align-items-center">

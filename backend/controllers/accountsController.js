@@ -10,18 +10,30 @@ const REDIRECT_URL = process.env.SPOTIFY_REDIRECT_URL;
 const SPOTIFY_SCOPES = "user-read-private";
 
 exports.saveLastFmAccount = async (req, res) => {
-  console.log("req: ", req);
   const { username } = req.body;
   const userId = req.user.id;
-  console.log("userId:", userId);
-  console.log("username:", username);
+
   try {
-    await UserAPI.upsert({
-      user_id: userId,
-      lastfm_account: username,
+    // Szukamy istniejącego rekordu dla user_id
+    const existingRecord = await UserAPI.findOne({
+      where: { user_id: userId },
     });
 
-    res.json({ message: "Last.fm account saved successfully!" });
+    if (existingRecord) {
+      // Jeśli rekord istnieje, aktualizujemy lastfm_account
+      await UserAPI.update(
+        { lastfm_account: username },
+        { where: { user_id: userId } }
+      );
+      res.json({ message: "Last.fm account updated successfully!" });
+    } else {
+      // Jeśli rekord nie istnieje, tworzymy nowy
+      await UserAPI.create({
+        user_id: userId,
+        lastfm_account: username,
+      });
+      res.json({ message: "Last.fm account created successfully!" });
+    }
   } catch (error) {
     console.error("Error saving Last.fm account:", error);
     res.status(500).json({ message: "Failed to save Last.fm account." });
