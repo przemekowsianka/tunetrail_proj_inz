@@ -3,7 +3,6 @@ import { Card, Button, Container, Row, Col, Spinner } from "react-bootstrap";
 import parse from "html-react-parser";
 
 import { fetchRandomArtist } from "../services/randomMusicService";
-import translateText from "../services/translateService";
 
 import SpotifyLogo from "../assets/spotify.png";
 import LastFMLogo from "../assets/lastfm.png";
@@ -36,24 +35,6 @@ const RecommendArtist = () => {
   }, [artist]);
 
   const bio = artist?.bio || "Brak biografii";
-  const translateBio = async (bio) => {
-    if (!bio) {
-      setTranslatedBio("Brak biografii");
-      return;
-    }
-    setTranslating(true);
-    try {
-      const translatedText = await translateText(bio);
-      console.log("TŁUMACZENIE: ", translatedText);
-      setTranslatedBio(translatedText);
-      if (translatedText == "") setTranslatedBio(bio);
-    } catch (error) {
-      console.error("Błąd tłumaczenia bio:", error);
-      setTranslatedBio(bio); // Fallback do oryginalnego bio
-    } finally {
-      setTranslating(false);
-    }
-  };
 
   return (
     <Container
@@ -143,7 +124,7 @@ const RecommendArtist = () => {
                     {translating ? (
                       <p>Trwa tłumaczenie biografii...</p>
                     ) : (
-                      <p style={{ margin: 0 }}>{parse(translatedBio)}</p>
+                      <p style={{ margin: 0 }}>{parse(bio)}</p>
                     )}
                   </div>
                   <div
