@@ -1,37 +1,54 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom"; // Dodano useNavigate
-import { registerUser } from "../services/api"; // Usunięto loginUser, bo nie jest potrzebny
-import { Button, Form, Container, Row, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../services/api";
+import { Button, Form, Container, Row, Col, Alert } from "react-bootstrap";
+import { getLastErrorResponse } from "../http/requestInterceptor";
 
 const Register = () => {
-  const navigate = useNavigate(); // Hook do nawigacji
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm();
-
+  const [error, setError] = useState(null); // Pełny obiekt błędu
   const password = watch("password");
 
+  // Obsługa rejestracji
   const onSubmit = async (data) => {
-    console.log("Submitting data:", JSON.stringify(data));
+    console.log("📤 Submitting data:", JSON.stringify(data));
     try {
-      // Wywołanie funkcji API do rejestracji
       const response = await registerUser({
         login: data.username,
         email: data.email,
         password: data.password,
       });
 
-      alert("User registered successfully: " + response.message);
-
-      // Przekierowanie na stronę logowania po rejestracji
+      console.log("✅ Wiadomość od serwera: ", response.message);
       navigate("/login");
     } catch (error) {
-      alert("Error: " + (error.response?.data?.error || error.message));
+      const lastError = getLastErrorResponse();
+      console.log("⚠️ Pełna struktura błędu (lastErrorResponse): ", lastError);
+
+      const message =
+        lastError.error ||
+        lastError.message ||
+        "Wystąpił problem z rejestracją.";
+
+      setError({
+        message: message,
+        fullError: lastError,
+      });
+
+      console.error("⚠️ Błąd rejestracji (pełny obiekt błędu):", lastError);
     }
+  };
+
+  // Funkcja do ręcznego zamknięcia alertu
+  const handleCloseAlert = () => {
+    setError((prevError) => ({ ...prevError, message: "" })); // Ukrycie alertu, zachowanie danych
   };
 
   // Przejście na stronę logowania
@@ -55,6 +72,18 @@ const Register = () => {
         >
           <div className="w-75">
             <h2 className="text-center mb-4">Rejestracja</h2>
+
+            {/* Alert z wiadomością błędu */}
+            {error?.message && (
+              <Alert
+                variant="danger"
+                className="text-center"
+                dismissible
+                onClose={handleCloseAlert}
+              >
+                {error.message}
+              </Alert>
+            )}
 
             <Form onSubmit={handleSubmit(onSubmit)}>
               <Form.Group className="mb-3" controlId="formEmail">
@@ -143,7 +172,6 @@ const Register = () => {
                 Zarejestruj się
               </Button>
             </Form>
-
             <div className="text-center">
               <Button variant="link" onClick={handleLoginRedirect}>
                 Masz konto? Zaloguj się

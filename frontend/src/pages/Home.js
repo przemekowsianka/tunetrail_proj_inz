@@ -9,8 +9,8 @@ const Home = () => {
   return (
     <div
       style={{
-        height: "100vh", // Ustawienie pełnej wysokości ekranu
-        overflowY: "auto", // Włączenie przewijania
+        height: "100vh",
+        overflowY: "auto",
         padding: "20px",
         background: "rgb(247,247,247)",
         background:

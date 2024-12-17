@@ -115,7 +115,7 @@ const RecommendTag = () => {
                   <div
                     className="TAG d-flex mb-3 w-75 justify-content-center align-items-center shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
+                      backgroundColor: "#845df4",
                       color: "white",
                       padding: "10px 20px",
                       borderRadius: "8px",
@@ -128,7 +128,7 @@ const RecommendTag = () => {
                   <div
                     className="TAG mb-2 w-35 justify-content-center align-items-center shadow"
                     style={{
-                      backgroundColor: "#8f74d7",
+                      backgroundColor: "#845df4",
                       color: "white",
                       padding: "10px 20px",
                       borderRadius: "8px",

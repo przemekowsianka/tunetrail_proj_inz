@@ -1,17 +1,46 @@
 const User = require("../models/users");
 const jwt = require("jsonwebtoken");
+const Sequelize = require("../config/database");
+const { Op } = require("sequelize");
 
 exports.register = async (req, res) => {
   try {
     const { login, email, password } = req.body;
-    const user = new User({ login, email, password });
-    await user.save();
+
+    // Sprawdzenie, czy użytkownik o tym loginie lub emailu już istnieje
+    const existingUser = await User.findOne({
+      where: {
+        [Op.or]: [{ login }, { email }],
+      },
+    });
+
+    if (existingUser) {
+      if (existingUser.login === login) {
+        const error = new Error("Ten login jest już zajęty.");
+        error.status = 400; // Dodaj status
+        throw error; // Rzuć obiekt error
+      }
+      if (existingUser.email === email) {
+        const error = new Error("Ten email jest już zajęty.");
+        error.status = 400; // Dodaj status
+        throw error; // Rzuć obiekt error
+      }
+    }
+
+    // Tworzenie nowego użytkownika
+    const user = await User.create({ login, email, password });
     res.status(201).json({ message: "Zarejestrowano pomyślnie" });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.log("⚠️ Pełny obiekt błędu:");
+    console.dir(error, { depth: null }); // Wyświetla cały obiekt błędu
+
+    // Ustaw status odpowiedzi na 400 lub 500
+    const statusCode = error.status || 500;
+    const message = error.message || "Wystąpił problem z rejestracją.";
+    console.log("MESSAGE: ", message);
+    res.status(statusCode).json({ error: message });
   }
 };
-
 exports.login = async (req, res) => {
   try {
     const { login, email, password } = req.body;

@@ -25,7 +25,7 @@ api.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
+let lastErrorResponse = null;
 // Możesz dodać interceptor odpowiedzi, jeśli chcesz obsługiwać odpowiedzi globalnie
 api.interceptors.response.use(
   (response) => {
@@ -34,10 +34,16 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Obsługuje błędy odpowiedzi
-    console.error("Error in response:", error);
+    if (error.response) {
+      lastErrorResponse = error.response.data; // Zapisz pełną odpowiedź błędu
+    } else {
+      lastErrorResponse = { message: error.message }; // Na wypadek błędu sieciowego
+    }
+
+    console.log("📡 Interceptor przechwycił błąd: ", lastErrorResponse);
+
     return Promise.reject(error);
   }
 );
-
+export const getLastErrorResponse = () => lastErrorResponse;
 export default api;

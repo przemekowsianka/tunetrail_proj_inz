@@ -14,7 +14,7 @@ const RecommendAlbum = () => {
       setLoading(true);
       setError(null); // Reset błędu podczas nowej próby
       const data = await fetchRandomAlbum();
-      console.log("Tag object:", data);
+
       setAlbum(data);
     } catch (err) {
       setError(err.message);
