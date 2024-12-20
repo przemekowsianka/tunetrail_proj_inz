@@ -11,7 +11,7 @@ const RecommendArtist = () => {
   const [artist, setArtist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [translatedBio, setTranslatedBio] = useState("");
+
   const [translating, setTranslating] = useState(false);
 
   const loadRandomArtist = async () => {
@@ -28,11 +28,6 @@ const RecommendArtist = () => {
   useEffect(() => {
     loadRandomArtist();
   }, []);
-  useEffect(() => {
-    if (artist?.bio) {
-      translateBio(artist.bio);
-    }
-  }, [artist]);
 
   const bio = artist?.bio || "Brak biografii";
 

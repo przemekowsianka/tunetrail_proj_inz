@@ -17,7 +17,7 @@ import Register from "./pages/Register";
 function App() {
   return (
     <Router>
-      <AppContent /> {/* Nowy komponent, który obsługuje widok */}
+      <AppContent />
     </Router>
   );
 }
@@ -57,7 +57,7 @@ function AppContent() {
             : isLeftBarExpanded && windowWidth >= 1024
             ? "25%"
             : "0",
-          transition: "margin-left 0.3s ease-in-out", // Zmieniono na "margin-left"
+          transition: "margin-left 0.3s ease-in-out",
         }}
       >
         <Routes>
